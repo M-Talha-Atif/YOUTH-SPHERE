@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "779856476238",
+    "project_id": "activity-manager-bac97",
+    "storage_bucket": "activity-manager-bac97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779856476238:android:5fdb2e040cc278c8fdeb1f",
+        "android_client_info": {
+          "package_name": "com.event.youthSphere"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCy1BWNRjolrAAcpy_rsl0mizhMtcB70wE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
