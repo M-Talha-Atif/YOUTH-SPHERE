@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation (libs.lottie)
+    implementation(libs.navigation.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

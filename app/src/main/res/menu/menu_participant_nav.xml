@@ -1,0 +1,12 @@
+<!-- res/menu/menu_participant_nav.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_activities"
+        android:title="Activities"
+        android:icon="@drawable/ic_home"/>
+    <item android:id="@+id/nav_calendar"
+        android:title="My Calendar"
+        android:icon="@drawable/ic_calendar"/>
+    <item android:id="@+id/nav_progress"
+        android:title="Progress"
+        android:icon="@drawable/ic_progress"/>
+</menu>

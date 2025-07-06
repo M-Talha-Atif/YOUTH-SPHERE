@@ -1,0 +1,15 @@
+<!-- res/menu/menu_super_admin_nav.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_overview"
+        android:title="Overview"
+        android:icon="@drawable/ic_home" />
+    <item
+        android:id="@+id/nav_user_management"
+        android:title="User Management"
+        android:icon="@drawable/ic_calendar" />
+    <item
+        android:id="@+id/nav_reviews"
+        android:title="Review Feedback"
+        android:icon="@drawable/ic_feedback" />
+</menu>

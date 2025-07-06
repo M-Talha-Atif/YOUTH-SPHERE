@@ -1,5 +1,6 @@
 package com.event.youthSphere.presentation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,7 +8,10 @@ import com.event.youthSphere.R;
 import com.event.youthSphere.databinding.ActivityMainBinding;
 import com.event.youthSphere.presentation.login.LoginFragment;
 import com.event.youthSphere.presentation.signup.SignupFragment;
+import com.event.youthSphere.utils.SessionManager;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,20 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private final String[] tabTitles = new String[]{"Login", "Signup"};
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        SessionManager sessionManager = new SessionManager(this);
+
+        if (currentUser != null && sessionManager.isLoggedIn()) {
+            startActivity(new Intent(this, DashboardActivity.class));
+            finish(); // prevent back to login/signup
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

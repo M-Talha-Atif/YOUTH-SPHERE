@@ -1,0 +1,15 @@
+<!-- res/menu/menu_program_coordinator_nav.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_manage_activities"
+        android:title="Manage Activities"
+        android:icon="@drawable/ic_home" />
+    <item
+        android:id="@+id/nav_manage_instructors"
+        android:title="Manage Instructors"
+        android:icon="@drawable/ic_instructor" />
+    <item
+        android:id="@+id/nav_top_activities"
+        android:title="Top Activities"
+        android:icon="@drawable/ic_activities" />
+</menu>

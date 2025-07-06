@@ -1,0 +1,15 @@
+<!-- res/menu/menu_instructor_nav.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_my_sessions"
+        android:title="My Sessions"
+        android:icon="@drawable/ic_home" />
+    <item
+        android:id="@+id/nav_feedback"
+        android:title="Feedback"
+        android:icon="@drawable/ic_feedback" />
+    <item
+        android:id="@+id/nav_upload_photos"
+        android:title="Upload Photos"
+        android:icon="@drawable/ic_gallery" />
+</menu>

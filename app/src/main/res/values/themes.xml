@@ -20,7 +20,31 @@
         <!-- Status bar color -->
         <item name="android:statusBarColor">@color/indigo_800</item>
 
-        <!-- Customize typography if needed -->
+        <!-- Toolbar/action bar theming -->
+        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
+
+        <!-- Popup menu theming -->
+        <item name="popupMenuStyle">@style/PopupMenu.MaterialComponents</item>
+    </style>
+
+    <!-- Popup menu style -->
+    <style name="PopupMenu.MaterialComponents" parent="@style/Widget.MaterialComponents.PopupMenu">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
+    </style>
+
+    <!-- Dark ActionBar theme overlay -->
+    <style name="ThemeOverlay.MaterialComponents.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <!-- Light Popup theme overlay -->
+    <style name="ThemeOverlay.MaterialComponents.Light">
         <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:background">@color/white</item>
     </style>
 </resources>
