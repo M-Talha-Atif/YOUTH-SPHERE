@@ -5,16 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Main content container with padding -->
+    <!-- Main content container -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/contentContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <!-- Title -->
         <TextView
@@ -29,76 +29,52 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Full Name -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/signupFullNameLayout"
+        <EditText
+            android:id="@+id/signupFullNameEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/full_name"
+            android:inputType="textPersonName"
             app:layout_constraintTop_toBottomOf="@id/signupTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/signupFullNameEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="16dp" />
 
         <!-- Email -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/signupEmailLayout"
+        <EditText
+            android:id="@+id/signupEmailEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/email"
-            app:layout_constraintTop_toBottomOf="@id/signupFullNameLayout"
+            android:inputType="textEmailAddress"
+            app:layout_constraintTop_toBottomOf="@id/signupFullNameEditText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/signupEmailEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="24dp" />
 
         <!-- Password -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/signupPasswordLayout"
+        <EditText
+            android:id="@+id/signupPasswordEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            app:layout_constraintTop_toBottomOf="@id/signupEmailLayout"
+            android:inputType="textPassword"
+            app:layout_constraintTop_toBottomOf="@id/signupEmailEditText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/signupPasswordEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="16dp" />
 
         <!-- Confirm Password -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/confirmPasswordLayout"
+        <EditText
+            android:id="@+id/confirmPasswordEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="@string/confirm_password"
-            app:layout_constraintTop_toBottomOf="@id/signupPasswordLayout"
+            android:inputType="textPassword"
+            app:layout_constraintTop_toBottomOf="@id/signupPasswordEditText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/confirmPasswordEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="16dp" />
 
         <!-- Role Spinner -->
         <Spinner
@@ -106,44 +82,45 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/confirmPasswordLayout"
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordEditText"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Sign Up Button -->
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/signupButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/sign_up"
-            app:cornerRadius="8dp"
+            android:background="@android:color/holo_blue_light"
+            android:textColor="@android:color/white"
+            android:padding="12dp"
             app:layout_constraintTop_toBottomOf="@id/roleSpinner"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp"/>
+            android:layout_marginTop="24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Full-screen loading overlay (outside the padded content container) -->
+    <!-- Native Loading Overlay -->
     <FrameLayout
         android:id="@+id/loadingOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80000000"
         android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/loadingAnimation"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+        <ProgressBar
+            android:id="@+id/loadingProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:lottie_autoPlay="false"
-            app:lottie_cacheComposition="true"
-            app:lottie_loop="true" />
+            android:indeterminate="true"
+            style="?android:attr/progressBarStyleLarge" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

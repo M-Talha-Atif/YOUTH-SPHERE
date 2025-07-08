@@ -1,0 +1,16 @@
+<!-- res/values/styles.xml -->
+<resources>
+    <style name="BottomSheetFullScreen" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetFullScreenStyle</item>
+    </style>
+
+    <style name="BottomSheetFullScreenStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="styleWithFixedWidth">
+        <item name="android:maxWidth">550dp</item>
+    </style>
+
+</resources>

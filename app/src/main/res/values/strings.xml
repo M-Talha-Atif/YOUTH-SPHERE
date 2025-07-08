@@ -9,4 +9,43 @@
     <string name="sign_up">Sign Up</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="full_name">Full Name</string>
+
+    <string name="add_activity">Add New Activity</string>
+    <string name="assign_activity">Assign Activity</string>
+    <string name="activity_name">Activity Name</string>
+    <string name="activity_description">Short Description</string>
+    <string name="activity_domain">Select Domain</string>
+    <string name="min_age">Minimum Age</string>
+    <string name="max_age">Maximum Age</string>
+    <string name="max_participants">Max Participants</string>
+    <string name="days_of_week">Select Days</string>
+    <string name="submit">Submit</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
+    <string name="activity_added_success">Activity added successfully</string>
+    <string name="activity_update_success">Activity updated successfully</string>
+    <string name="activity_delete_success">Activity deleted successfully</string>
+    <string name="activity_failed">Operation failed. Please try again.</string>
+
+    <string name="snackbar_activity_added">Activity added successfully.</string>
+    <string name="snackbar_activity_failed">Something went wrong. Please try again.</string>
+    <string name="snackbar_activity_delete_success">Activity deleted successfully.</string>
+
+    <string name="label_select_activity">Select Activity</string>
+    <string name="label_select_instructor">Select Instructor</string>
+    <string name="button_assign">Assign Activity</string>
+    <string name="snackbar_assigned_success">Instructor assigned successfully.</string>
+    <string name="snackbar_assign_failed">Failed to assign instructor.</string>
+    <string name="no_instructors_available">No instructors available.</string>
+
+    <string name="select_activity">Select Activity</string>
+    <string name="select_domain">Select Domain</string>
+    <string name="select_instructor">Select Instructor</string>
+    <string name="field_of_specialization">Field of Specialization</string>
+    <string name="employment_start_date">Employment Start Date</string>
+    <string name="close">Close</string>
+    <string name="no_instructors_yet">No instructors available</string>
+    <string name="snackbar_fill_all_fields">Please fill all fields</string>
+    <string name="snackbar_activity_assigned">Activity assigned successfully</string>
+
 </resources>
