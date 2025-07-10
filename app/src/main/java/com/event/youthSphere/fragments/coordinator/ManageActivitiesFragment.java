@@ -2,6 +2,9 @@ package com.event.youthSphere.fragments.coordinator;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -18,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.ActivityAdapter;
-import com.event.youthSphere.bottomsheet.AddActivityBottomSheetDialog;
-import com.event.youthSphere.bottomsheet.AssignActivityBottomSheetDialog;
-import com.event.youthSphere.bottomsheet.EditActivityBottomSheetDialog;
+import com.event.youthSphere.bottomsheet.coordinator.activity.AddActivityBottomSheetDialog;
+import com.event.youthSphere.bottomsheet.coordinator.activity.AssignActivityBottomSheetDialog;
+import com.event.youthSphere.bottomsheet.coordinator.activity.EditActivityBottomSheetDialog;
 import com.event.youthSphere.firebase.FirebaseActivityHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.users.InstructorUser;
@@ -28,6 +30,8 @@ import com.event.youthSphere.utils.SimpleSpinnerListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+
 
 import java.util.*;
 
@@ -47,6 +51,9 @@ public class ManageActivitiesFragment extends Fragment {
     private final int DEBOUNCE_DELAY = 400;
     private Runnable searchRunnable;
 
+    EditText etMinAge, etMaxAge, etMaxParticipants;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -58,6 +65,28 @@ public class ManageActivitiesFragment extends Fragment {
         etSearch = rootView.findViewById(R.id.etSearch);
         spinnerInstructorFilter = rootView.findViewById(R.id.spinnerInstructorFilter);
         spinnerMonthFilter = rootView.findViewById(R.id.spinnerMonthFilter);
+        etMinAge = rootView.findViewById(R.id.etMinAge);
+        etMaxAge = rootView.findViewById(R.id.etMaxAge);
+        etMaxParticipants = rootView.findViewById(R.id.etMaxParticipants);
+
+        InputFilter[] positiveFilter = new InputFilter[]{
+                (source, start, end, dest, dstart, dend) -> {
+                    try {
+                        String input = dest.toString() + source.toString();
+                        if (input.isEmpty()) return null;
+                        int value = Integer.parseInt(input);
+                        return value >= 0 ? null : "";
+                    } catch (NumberFormatException e) {
+                        return "";
+                    }
+                }
+        };
+
+        etMinAge.setFilters(positiveFilter);
+        etMaxAge.setFilters(positiveFilter);
+        etMaxParticipants.setFilters(positiveFilter);
+
+
 
         List<String> instructorNames = new ArrayList<>();
         instructorNames.add("All Instructors");
@@ -74,19 +103,29 @@ public class ManageActivitiesFragment extends Fragment {
                 }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item, instructorNames);
-            spinnerInstructorFilter.setAdapter(adapter);
-            spinnerInstructorFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+            if (isSafe()) {
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                        android.R.layout.simple_spinner_dropdown_item, instructorNames);
+                spinnerInstructorFilter.setAdapter(adapter);
+                spinnerInstructorFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+            }
+
+
         });
 
         List<String> months = Arrays.asList("All Months", "January", "February", "March", "April", "May",
                 "June", "July", "August", "September", "October", "November", "December");
 
-        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_dropdown_item, months);
-        spinnerMonthFilter.setAdapter(monthAdapter);
-        spinnerMonthFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+
+        if (isSafe()) {
+
+            ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(getContext(),
+                    android.R.layout.simple_spinner_dropdown_item, months);
+            spinnerMonthFilter.setAdapter(monthAdapter);
+            spinnerMonthFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+
+        }
 
         etSearch.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -104,37 +143,66 @@ public class ManageActivitiesFragment extends Fragment {
         adapter = new ActivityAdapter();
 
         adapter.setOnDeleteClickListener(activity -> {
-            new AlertDialog.Builder(requireContext())
-                    .setTitle("Delete Activity")
-                    .setMessage("Are you sure you want to delete this activity?")
-                    .setPositiveButton("Delete", (dialog, which) -> {
-                        FirebaseActivityHelper.deleteActivityAndUpdateInstructor(
-                                activity.getId(),
-                                activity.getInstructorId(),
-                                task -> {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(requireContext(), "Activity deleted", Toast.LENGTH_SHORT).show();
-                                        loadActivities();
-                                    } else {
-                                        Toast.makeText(requireContext(), "Failed to delete activity", Toast.LENGTH_SHORT).show();
+            if (isSafe()) {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Delete Activity")
+                        .setMessage("Are you sure you want to delete this activity?")
+                        .setPositiveButton("Delete", (dialog, which) -> {
+                            FirebaseActivityHelper.deleteActivityAndUpdateInstructor(
+                                    activity.getId(),
+                                    activity.getInstructorId(),
+                                    task -> {
+                                        if (task.isSuccessful()) {
+                                            if (!isAdded() || rootView == null) return;
+
+                                            if (isSafe()) {
+                                                Snackbar.make(rootView, "Activity deleted", Snackbar.LENGTH_SHORT).show();
+                                            }
+                                            loadActivities();
+                                        } else {
+                                            if (!isAdded() || rootView == null) return;
+
+                                            if (isSafe()) {
+                                                Snackbar.make(rootView, "Failed to delete activity", Snackbar.LENGTH_SHORT).show();
+                                            }
+                                        }
                                     }
-                                }
-                        );
-                    })
-                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                    .show();
+                            );
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                        .show();
+            }
         });
+
 
         adapter.setOnEditClickListener(activity -> {
             EditActivityBottomSheetDialog dialog = new EditActivityBottomSheetDialog(activity, this::loadActivities);
             dialog.show(getChildFragmentManager(), "EditActivityDialog");
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.setAdapter(adapter);
+
+        if (isSafe()) {
+
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(adapter);
+
+        }
 
         btnAddActivity.setOnClickListener(v -> showAddActivityBottomSheet());
         btnAssignActivity.setOnClickListener(v -> showAssignActivityBottomSheet());
+
+        TextWatcher autoFilterWatcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                applyFilters();
+            }
+        };
+
+        etMinAge.addTextChangedListener(autoFilterWatcher);
+        etMaxAge.addTextChangedListener(autoFilterWatcher);
+        etMaxParticipants.addTextChangedListener(autoFilterWatcher);
+
 
         return rootView;
     }
@@ -161,7 +229,7 @@ public class ManageActivitiesFragment extends Fragment {
     }
 
     private void loadActivities() {
-        if (!isAdded() || rootView == null) return;
+        if (!isSafe()) return;
 
         FirebaseActivityHelper.getAllActivities((value, error) -> {
             if (!isAdded() || rootView == null || error != null || value == null) return;
@@ -172,11 +240,38 @@ public class ManageActivitiesFragment extends Fragment {
                 activityList.add(activity);
             }
 
-            if (!isAdded() || rootView == null) return;
+            if (!isSafe()) return;
 
-            requireActivity().runOnUiThread(this::applyFilters);
+            if ( getActivity()!=null && getContext()!=null ){
+                requireActivity().runOnUiThread(this::applyFilters);
+            }
+
+
         });
     }
+
+    private boolean isSafe() {
+        return isAdded() && getContext() != null && rootView != null;
+    }
+
+    /**
+     * Safely parses a string into an integer with a default fallback value
+     * @param input The string to parse
+     * @param defaultValue The value to return if parsing fails
+     * @return Parsed integer or defaultValue if parsing fails
+     */
+    public static int parseIntSafe(String input, int defaultValue) {
+        if (input == null || input.trim().isEmpty()) {
+            return defaultValue;
+        }
+
+        try {
+            return Integer.parseInt(input.trim());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
 
     private void applyFilters() {
         if (spinnerInstructorFilter.getSelectedItem() == null || spinnerMonthFilter.getSelectedItem() == null) return;
@@ -187,10 +282,15 @@ public class ManageActivitiesFragment extends Fragment {
 
         String selectedInstructorId = instructorNameToId.get(selectedInstructor);
 
+        int minAge = parseIntSafe(etMinAge.getText().toString(), -1);
+        int maxAge = parseIntSafe(etMaxAge.getText().toString(), -1);
+        int maxParticipantsFilter = parseIntSafe(etMaxParticipants.getText().toString(), -1);
+
         List<ActivityModel> filtered = new ArrayList<>();
         for (ActivityModel activity : activityList) {
             boolean matchesSearch = activity.getName().toLowerCase().contains(searchText)
-                    || activity.getDomain().toLowerCase().contains(searchText);
+                    || activity.getDomain().toLowerCase().contains(searchText)
+                    || (activity.getDescription() != null && activity.getDescription().toLowerCase().contains(searchText));
 
             boolean matchesInstructor = selectedInstructor.equals("All Instructors")
                     || (selectedInstructorId != null && selectedInstructorId.equals(activity.getInstructorId()));
@@ -198,9 +298,17 @@ public class ManageActivitiesFragment extends Fragment {
             boolean matchesMonth = selectedMonth.equals("All Months")
                     || (activity.getMonth() != null && activity.getMonth().toLowerCase().startsWith(selectedMonth.toLowerCase()));
 
-            if (matchesSearch && matchesInstructor && matchesMonth) {
+            boolean matchesAgeRange = (minAge == -1 || activity.getMinAge() >= minAge)
+                    && (maxAge == -1 || activity.getMaxAge() <= maxAge);
+
+            boolean matchesParticipants = maxParticipantsFilter == -1
+                    || activity.getMaxParticipants() <= maxParticipantsFilter;
+
+
+            if (matchesSearch && matchesInstructor && matchesMonth && matchesAgeRange && matchesParticipants) {
                 filtered.add(activity);
             }
+
         }
 
         adapter.submitList(filtered);

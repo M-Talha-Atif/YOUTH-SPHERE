@@ -1,7 +1,6 @@
-package com.event.youthSphere.bottomsheet;
+package com.event.youthSphere.bottomsheet.coordinator.activity;
 
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -20,18 +19,27 @@ import com.event.youthSphere.R;
 import com.event.youthSphere.firebase.FirebaseActivityHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.google.android.material.snackbar.Snackbar;
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 public class EditActivityBottomSheetDialog extends DialogFragment {
 
     private final ActivityModel activity;
     private final Runnable onActivityUpdated;
 
+    /**
+     * Constructor*/
     public EditActivityBottomSheetDialog(ActivityModel activity, Runnable onActivityUpdated) {
         this.activity = activity;
         this.onActivityUpdated = onActivityUpdated;
     }
 
+    /**
+     * A bottom sheet dialog for assigning an existing activity to an instructor.
+     * Sets up the UI components and handles the assignment logic when the user interacts with the dialog.
+     *
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * @return Return a new Dialog instance to be displayed
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -127,11 +135,16 @@ public class EditActivityBottomSheetDialog extends DialogFragment {
 
             FirebaseActivityHelper.updateActivity(activity, task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(requireContext(), "Activity updated", Toast.LENGTH_SHORT).show();
+                    if(getContext() != null && isAdded() ) {
+                        Toast.makeText(getContext(), "Activity updated", Toast.LENGTH_SHORT).show();
+                    }
                     dismiss();
                     if (onActivityUpdated != null) onActivityUpdated.run();
-                } else {
-                    Snackbar.make(view, "Update failed", Snackbar.LENGTH_SHORT).show();
+                }
+                else {
+                    if (getContext() != null && isAdded()) {
+                        Toast.makeText(getContext(), "Failed to update activity", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         });

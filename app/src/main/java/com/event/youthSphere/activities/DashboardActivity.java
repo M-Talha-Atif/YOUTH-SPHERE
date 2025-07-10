@@ -14,12 +14,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-
 import com.event.youthSphere.R;
 import com.event.youthSphere.fragments.coordinator.ManageActivitiesFragment;
+import com.event.youthSphere.fragments.coordinator.ManageInstructorsFragment;
 import com.event.youthSphere.models.UserRole;
 import com.event.youthSphere.utils.SessionManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
@@ -208,6 +207,7 @@ public class DashboardActivity extends AppCompatActivity {
         if (role == UserRole.COORDINATOR) {
             loadFragment(new ManageActivitiesFragment());
             navBtn1.setOnClickListener(v -> loadFragment(new ManageActivitiesFragment()));
+            navBtn2.setOnClickListener(v -> loadFragment(new ManageInstructorsFragment()));
         }
     }
 

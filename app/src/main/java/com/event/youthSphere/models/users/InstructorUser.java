@@ -37,5 +37,39 @@ public class InstructorUser extends User {
         map.put("employmentStartDate", employmentStartDate);
         return map;
     }
+
+    @Override
+    public String getEmail() {
+        return super.getEmail();
+    }
+
+    @Override
+    public String getFullName() {
+        return super.getFullName();
+    }
+
+    public String getFieldOfSpecialization() {
+        return fieldOfSpecialization;
+    }
+
+    public String getEmploymentStartDate() {
+        return employmentStartDate;
+    }
+
+    public void setFieldOfSpecialization(String fieldOfSpecialization) {
+        this.fieldOfSpecialization = fieldOfSpecialization;
+    }
+
+    public void setEmploymentStartDate(String employmentStartDate) {
+        this.employmentStartDate = employmentStartDate;
+    }
+
+    public void setActivityIds(List<String> activityIds) {
+        this.activityIds = activityIds;
+    }
+
+    public List<String> getActivityIds() {
+        return activityIds;
+    }
 }
 

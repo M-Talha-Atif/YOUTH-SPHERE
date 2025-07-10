@@ -13,6 +13,10 @@ public abstract class User implements RoleUser {
         this.role = role;
     }
 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     @Override
     public String getUid() {
         return uid;

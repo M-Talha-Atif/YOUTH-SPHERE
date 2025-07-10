@@ -21,6 +21,7 @@ public class FirebaseActivityHelper {
         activityRef.document(id).set(activity).addOnCompleteListener(listener);
     }
 
+    // Update activity
     public static void updateActivity(ActivityModel activity, OnCompleteListener<Void> listener) {
         if (activity.getId() == null) return;
         activityRef.document(activity.getId()).set(activity).addOnCompleteListener(listener);
@@ -30,6 +31,7 @@ public class FirebaseActivityHelper {
         activityRef.document(id).delete().addOnCompleteListener(listener);
     }
 
+    // Get all activities
     public static void getAllActivities(EventListener<QuerySnapshot> listener) {
         activityRef.orderBy("registeredCount", Query.Direction.DESCENDING).addSnapshotListener(listener);
     }
@@ -47,7 +49,7 @@ public class FirebaseActivityHelper {
                                                   String specialization, String employmentDate,
                                                   OnCompleteListener<Void> listener) {
 
-        // Step 1: Update the activity with instructorId
+        // Update the activity with instructorId
         activityRef.document(activityId).update("instructorId", instructorId)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -55,13 +57,13 @@ public class FirebaseActivityHelper {
                         return;
                     }
 
-                    // Step 2: Prepare instructor updates
+                    // Prepare instructor updates
                     Map<String, Object> instructorUpdates = new HashMap<>();
                     instructorUpdates.put("activityIds", FieldValue.arrayUnion(activityId));
                     instructorUpdates.put("fieldOfSpecialization", specialization);
                     instructorUpdates.put("employmentStartDate", employmentDate);
 
-                    // Step 3: Apply updates to instructor
+                    //  Apply updates to instructor
                     FirebaseFirestore.getInstance()
                             .collection("users")
                             .document(instructorId)

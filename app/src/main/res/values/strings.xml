@@ -48,4 +48,13 @@
     <string name="snackbar_fill_all_fields">Please fill all fields</string>
     <string name="snackbar_activity_assigned">Activity assigned successfully</string>
 
+
+    <string name="domain_label">Domain: %s</string>
+    <string name="age_range_label">Age: %d - %d</string>
+    <string name="participants_label">Participants: %d/%d</string>
+    <string name="days_label">Days: %s</string>
+    <string name="month_label">Month: %s</string>
+    <string name="no_description">No description</string>
+    <string name="not_assigned">Not Assigned</string>
+
 </resources>

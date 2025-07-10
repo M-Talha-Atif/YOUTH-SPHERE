@@ -1,4 +1,4 @@
-package com.event.youthSphere.bottomsheet;
+package com.event.youthSphere.bottomsheet.coordinator.activity;
 
 
 import android.annotation.SuppressLint;
@@ -23,15 +23,30 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
+
+/**
+ * A bottom sheet dialog for adding new activities to the system.
+ * Handles activity creation with validation and posts data to Firebase.
+ */
 public class AddActivityBottomSheetDialog extends DialogFragment {
 
     private final Runnable onActivityAdded;
 
+
+    /**
+     * Constructs a new AddActivityBottomSheetDialog
+     * @param onActivityAdded Callback to execute after successful activity addition
+     */
     public AddActivityBottomSheetDialog(Runnable onActivityAdded) {
         this.onActivityAdded = onActivityAdded;
     }
 
-
+    /**
+     * Creates the dialog and sets up its content view
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * @return Return a new Dialog instance to be displayed
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -148,6 +163,11 @@ public class AddActivityBottomSheetDialog extends DialogFragment {
     }
 
 
+
+    /**
+     * Called when the fragment is visible to the user and actively running
+     * Adjusts the dialog window size
+     */
     @Override
     public void onResume() {
         super.onResume();
