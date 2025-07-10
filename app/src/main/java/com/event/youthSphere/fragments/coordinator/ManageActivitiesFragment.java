@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +17,7 @@ import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.ActivityAdapter;
 import com.event.youthSphere.bottomsheet.AddActivityBottomSheetDialog;
 import com.event.youthSphere.bottomsheet.AssignActivityBottomSheetDialog;
+import com.event.youthSphere.bottomsheet.EditActivityBottomSheetDialog;
 import com.event.youthSphere.firebase.FirebaseActivityHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -40,6 +42,38 @@ public class ManageActivitiesFragment extends Fragment {
 
         activityList = new ArrayList<>();
         adapter = new ActivityAdapter();
+
+        // Delete button
+              adapter.setOnDeleteClickListener(activity -> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Activity")
+                    .setMessage("Are you sure you want to delete this activity?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        FirebaseActivityHelper.deleteActivityAndUpdateInstructor(
+                                activity.getId(),
+                                activity.getInstructorId(),
+                                task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(requireContext(), "Activity deleted", Toast.LENGTH_SHORT).show();
+                                        loadActivities();
+                                    } else {
+                                        Toast.makeText(requireContext(), "Failed to delete activity", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                        );
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+
+              // Edit
+        adapter.setOnEditClickListener(activity -> {
+            EditActivityBottomSheetDialog dialog = new EditActivityBottomSheetDialog(activity, this::loadActivities);
+            dialog.show(getChildFragmentManager(), "EditActivityDialog");
+        });
+
+
+
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(adapter);
 

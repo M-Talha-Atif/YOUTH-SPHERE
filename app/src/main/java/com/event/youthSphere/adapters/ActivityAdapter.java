@@ -3,6 +3,7 @@ package com.event.youthSphere.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
@@ -16,6 +17,25 @@ public class ActivityAdapter extends ListAdapter<ActivityModel, ActivityAdapter.
 
     public ActivityAdapter() {
         super(DIFF_CALLBACK);
+    }
+
+    private OnEditClickListener editListener;
+    private OnDeleteClickListener deleteListener;
+
+    public interface OnEditClickListener {
+        void onEdit(ActivityModel model);
+    }
+
+    public interface OnDeleteClickListener {
+        void onDelete(ActivityModel model);
+    }
+
+    public void setOnEditClickListener(OnEditClickListener listener) {
+        this.editListener = listener;
+    }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener) {
+        this.deleteListener = listener;
     }
 
     private static final DiffUtil.ItemCallback<ActivityModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ActivityModel>() {
@@ -46,10 +66,20 @@ public class ActivityAdapter extends ListAdapter<ActivityModel, ActivityAdapter.
         holder.tvParticipants.setText("Participants: " + activity.getRegisteredCount() + "/" + activity.getMaxParticipants());
         holder.tvDays.setText("Days: " + String.join(", ", activity.getDays()));
         holder.tvMonth.setText("Month: " + activity.getMonth());
+        holder.btnEdit.setOnClickListener(v -> {
+            if (editListener != null) editListener.onEdit(activity);
+        });
+
+        holder.btnDelete.setOnClickListener(v -> {
+            if (deleteListener != null) deleteListener.onDelete(activity);
+        });
     }
 
     static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvDomain, tvAgeRange, tvParticipants, tvDays, tvMonth;
+        ImageView btnEdit ;
+        ImageView btnDelete ;
+
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,6 +89,8 @@ public class ActivityAdapter extends ListAdapter<ActivityModel, ActivityAdapter.
             tvParticipants = itemView.findViewById(R.id.tvParticipants);
             tvDays = itemView.findViewById(R.id.tvDays);
             tvMonth = itemView.findViewById(R.id.tvMonth);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

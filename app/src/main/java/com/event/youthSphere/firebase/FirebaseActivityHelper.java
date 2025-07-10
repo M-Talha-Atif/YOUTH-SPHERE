@@ -74,5 +74,18 @@ public class FirebaseActivityHelper {
     public static void fetchAllInstructors(EventListener<QuerySnapshot> listener) {
         userRef.whereEqualTo("role", "INSTRUCTOR").addSnapshotListener(listener);
     }
+
+    public static void deleteActivityAndUpdateInstructor(String activityId, String instructorId, OnCompleteListener<Void> listener) {
+        WriteBatch batch = FirebaseFirestore.getInstance().batch();
+        batch.delete(activityRef.document(activityId));
+
+        if (instructorId != null) {
+            DocumentReference instructorRef = userRef.document(instructorId);
+            batch.update(instructorRef, "activityIds", FieldValue.arrayRemove(activityId));
+        }
+
+        batch.commit().addOnCompleteListener(listener);
+    }
+
 }
 
