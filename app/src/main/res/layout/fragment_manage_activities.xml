@@ -16,6 +16,31 @@
         android:layout_height="wrap_content"
         android:text="@string/assign_activity" />
 
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search by name or domain"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:padding="10dp"
+        android:layout_marginBottom="8dp"
+        />
+
+    <Spinner
+        android:id="@+id/spinnerInstructorFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        />
+
+    <Spinner
+        android:id="@+id/spinnerMonthFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        />
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerActivities"
         android:layout_width="match_parent"
