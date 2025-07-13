@@ -15,13 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.event.youthSphere.R;
-import com.event.youthSphere.firebase.FirebaseInstructorHelper;
+import com.event.youthSphere.firebase.FirebaseCoordinateHelper;
 import com.event.youthSphere.models.users.InstructorUser;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
 import android.app.DatePickerDialog;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -99,7 +98,7 @@ public class EditInstructorBottomSheetDialog extends DialogFragment {
             instructor.setFieldOfSpecialization(field);
             instructor.setEmploymentStartDate(date);
 
-            FirebaseInstructorHelper.updateInstructor(instructor, task -> {
+            FirebaseCoordinateHelper.updateInstructor(instructor, task -> {
                 if (task.isSuccessful()) {
                     if (getContext() != null && isAdded()) {
                         Toast.makeText(getContext(), "Instructor updated", Toast.LENGTH_SHORT).show();

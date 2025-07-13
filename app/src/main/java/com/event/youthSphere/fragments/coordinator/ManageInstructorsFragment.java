@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.InstructorAdapter;
 import com.event.youthSphere.bottomsheet.coordinator.instructor.EditInstructorBottomSheetDialog;
-import com.event.youthSphere.firebase.FirebaseInstructorHelper;
+import com.event.youthSphere.firebase.FirebaseCoordinateHelper;
 import com.event.youthSphere.models.users.InstructorUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 
@@ -91,7 +91,7 @@ public class ManageInstructorsFragment extends Fragment {
                         .setTitle("Delete Instructor")
                         .setMessage("Are you sure you want to delete this instructor?")
                         .setPositiveButton("Delete", (dialog, which) -> {
-                            FirebaseInstructorHelper.deleteInstructor(instructor.getUid(), task -> {
+                            FirebaseCoordinateHelper.deleteInstructor(instructor.getUid(), task -> {
                                 if (task.isSuccessful()) {
                                     if (getContext() != null) {
                                         Toast.makeText(getContext(), "Instructor deleted", Toast.LENGTH_SHORT).show();
@@ -120,7 +120,7 @@ public class ManageInstructorsFragment extends Fragment {
     }
 
     private void loadInstructors() {
-        FirebaseInstructorHelper.getAllInstructors((snapshots, error) -> {
+        FirebaseCoordinateHelper.getAllInstructors((snapshots, error) -> {
             if (error != null || snapshots == null) return;
 
             instructors.clear();

@@ -62,6 +62,26 @@
             android:layout_marginBottom="8dp"
             android:textSize="16sp" />
 
+        <EditText
+            android:id="@+id/etStartDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Start Date"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/etEndDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="End Date"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"
+            android:layout_marginBottom="8dp" />
+
         <!-- Days checkboxes -->
         <LinearLayout
             android:id="@+id/daysCheckboxContainer"

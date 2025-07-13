@@ -1,6 +1,7 @@
 package com.event.youthSphere.models.activity;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,10 +18,15 @@ public class ActivityModel {
     private String instructorId;
     private int registeredCount;
 
+    private Date startDate;
+    private Date endDate;
+
+
     public ActivityModel() {} // Firebase requires empty constructor
 
     public ActivityModel(String id, String name, String domain, int minAge, int maxAge, String description,
-                         List<String> days, int maxParticipants, String month, String instructorId, int registeredCount) {
+                         List<String> days, int maxParticipants, String month, String instructorId,
+                         int registeredCount, Date startDate, Date endDate) {
         this.id = id;
         this.name = name;
         this.domain = domain;
@@ -32,6 +38,8 @@ public class ActivityModel {
         this.month = month;
         this.instructorId = instructorId;
         this.registeredCount = registeredCount;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     // equals and hashcode
@@ -153,4 +161,22 @@ public class ActivityModel {
     public void setRegisteredCount(int registeredCount) {
         this.registeredCount = registeredCount;
     }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
 }
+

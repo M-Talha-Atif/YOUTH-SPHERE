@@ -88,31 +88,34 @@ public class ManageActivitiesFragment extends Fragment {
 
 
 
+        Set<String> uniqueInstructorNamesSet = new HashSet<>();
         List<String> instructorNames = new ArrayList<>();
         instructorNames.add("All Instructors");
+        uniqueInstructorNamesSet.add("All Instructors");
 
         FirebaseActivityHelper.fetchAllInstructors((snapshots, error) -> {
             if (error != null || snapshots == null) return;
 
             for (DocumentSnapshot doc : snapshots.getDocuments()) {
-                String name = Objects.requireNonNull(doc.toObject(InstructorUser.class)).getFullName();
-                String id = doc.getId();
-                if (name != null) {
-                    instructorNames.add(name);
-                    instructorNameToId.put(name, id);
+                InstructorUser instructor = doc.toObject(InstructorUser.class);
+                if (instructor != null) {
+                    String name = instructor.getFullName();
+                    String id = doc.getId();
+                    if (name != null && uniqueInstructorNamesSet.add(name)) {
+                        instructorNames.add(name);
+                        instructorNameToId.put(name, id);
+                    }
                 }
             }
 
             if (isSafe()) {
-
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                         android.R.layout.simple_spinner_dropdown_item, instructorNames);
                 spinnerInstructorFilter.setAdapter(adapter);
                 spinnerInstructorFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
             }
-
-
         });
+
 
         List<String> months = Arrays.asList("All Months", "January", "February", "March", "April", "May",
                 "June", "July", "August", "September", "October", "November", "December");

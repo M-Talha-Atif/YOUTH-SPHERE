@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <item name="menu_manage_activities" type="id" />
+        <item name="menu_instructors" type="id" />
+        <item name="menu_activities" type="id" />
+        <item name="menu_view_activities" type="id" />
+        <item name="menu_assigned" type="id" />
+
+
+</resources>

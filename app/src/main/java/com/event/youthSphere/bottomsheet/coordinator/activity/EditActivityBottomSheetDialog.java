@@ -1,6 +1,7 @@
 package com.event.youthSphere.bottomsheet.coordinator.activity;
 
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.event.youthSphere.firebase.FirebaseActivityHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 public class EditActivityBottomSheetDialog extends DialogFragment {
 
@@ -47,6 +49,12 @@ public class EditActivityBottomSheetDialog extends DialogFragment {
         Dialog dialog = new Dialog(requireContext());
         dialog.setContentView(view);
 
+        EditText etStartDate = view.findViewById(R.id.etStartDate);
+        EditText etEndDate = view.findViewById(R.id.etEndDate);
+
+        final Calendar startCalendar = Calendar.getInstance();
+        final Calendar endCalendar = Calendar.getInstance();
+
         EditText etName = view.findViewById(R.id.etName);
         Spinner spinnerDomain = view.findViewById(R.id.spinnerDomain);
         EditText etMinAge = view.findViewById(R.id.etMinAge);
@@ -63,6 +71,28 @@ public class EditActivityBottomSheetDialog extends DialogFragment {
         CheckBox cbFri = view.findViewById(R.id.cbFriday);
         CheckBox cbSat = view.findViewById(R.id.cbSaturday);
         CheckBox cbSun = view.findViewById(R.id.cbSunday);
+
+        DatePickerDialog.OnDateSetListener startDateListener = (view1, year, month, dayOfMonth) -> {
+            startCalendar.set(year, month, dayOfMonth);
+            etStartDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(startCalendar.getTime()));
+        };
+
+        DatePickerDialog.OnDateSetListener endDateListener = (view12, year, month, dayOfMonth) -> {
+            endCalendar.set(year, month, dayOfMonth);
+            etEndDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(endCalendar.getTime()));
+        };
+
+        etStartDate.setOnClickListener(v -> {
+            new DatePickerDialog(requireContext(), startDateListener,
+                    startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH))
+                    .show();
+        });
+
+        etEndDate.setOnClickListener(v -> {
+            new DatePickerDialog(requireContext(), endDateListener,
+                    endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH))
+                    .show();
+        });
 
         // Set existing data
         etName.setText(activity.getName());
@@ -116,6 +146,17 @@ public class EditActivityBottomSheetDialog extends DialogFragment {
                 return;
             }
 
+            if (TextUtils.isEmpty(etStartDate.getText()) || TextUtils.isEmpty(etEndDate.getText())) {
+                Snackbar.make(view, "Please select both start and end dates", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (startCalendar.getTime().after(endCalendar.getTime())) {
+                Snackbar.make(view, "Start date cannot be after end date", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+
+
             int minAge = Integer.parseInt(minAgeStr);
             int maxAge = Integer.parseInt(maxAgeStr);
             int maxParticipants = Integer.parseInt(maxPartStr);
@@ -128,6 +169,8 @@ public class EditActivityBottomSheetDialog extends DialogFragment {
             activity.setName(name);
             activity.setDomain(domain);
             activity.setMinAge(minAge);
+            activity.setStartDate(startCalendar.getTime());
+            activity.setEndDate(endCalendar.getTime());
             activity.setMaxAge(maxAge);
             activity.setDescription(description);
             activity.setDays(selectedDays);
