@@ -1,11 +1,15 @@
 // EditInstructorBottomSheetDialog.java
 package com.event.youthSphere.bottomsheet.coordinator.instructor;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -114,5 +118,23 @@ public class EditInstructorBottomSheetDialog extends DialogFragment {
         });
 
         return view;
+    }
+
+    /**
+     * Called when the fragment is visible to the user and actively running
+     * Adjusts the dialog window size
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Resize bottom sheet dialog so it doesn't span the entire width past a particular measurement
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels < 1280 ? metrics.widthPixels : 1280;
+        int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        getDialog().getWindow().setLayout(width, height);
     }
 }

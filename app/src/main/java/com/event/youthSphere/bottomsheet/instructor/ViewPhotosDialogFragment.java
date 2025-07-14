@@ -1,14 +1,14 @@
 package com.event.youthSphere.bottomsheet.instructor;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.*;
-
 import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.ImageGalleryAdapter;
 import com.event.youthSphere.firebase.FirebaseInstructorHelper;
@@ -53,5 +53,23 @@ public class ViewPhotosDialogFragment extends DialogFragment {
             images.addAll(result);
             adapter.notifyDataSetChanged();
         });
+    }
+
+    /**
+     * Called when the fragment is visible to the user and actively running
+     * Adjusts the dialog window size
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Resize bottom sheet dialog so it doesn't span the entire width past a particular measurement
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels < 1280 ? metrics.widthPixels : 1280;
+        int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        getDialog().getWindow().setLayout(width, height);
     }
 }

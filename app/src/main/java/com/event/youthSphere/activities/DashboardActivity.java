@@ -33,8 +33,6 @@ public class DashboardActivity extends AppCompatActivity {
 
     private SessionManager sessionManager;
     private Toolbar topAppBar;
-    private LinearLayout bottomNavigationView;
-    private Button navBtn1, navBtn2, navBtn3;
     private UserRole currentRole;
 
     // Coordinator
@@ -77,10 +75,6 @@ public class DashboardActivity extends AppCompatActivity {
 
         // Initialize views using findViewById
         topAppBar = findViewById(R.id.topAppBar);
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        navBtn1 = findViewById(R.id.nav_btn_1);
-        navBtn2 = findViewById(R.id.nav_btn_2);
-        navBtn3 = findViewById(R.id.nav_btn_3);
 
 
         // Set up toolbar as the action bar
@@ -109,14 +103,6 @@ public class DashboardActivity extends AppCompatActivity {
                     topAppBar.getPaddingBottom()
             );
 
-            // Apply bottom padding to bottom nav
-            ViewCompat.setPaddingRelative(
-                    bottomNavigationView,
-                    ViewCompat.getPaddingStart(bottomNavigationView),
-                    bottomNavigationView.getPaddingTop(),
-                    ViewCompat.getPaddingEnd(bottomNavigationView),
-                    systemBars.bottom
-            );
 
             return WindowInsetsCompat.CONSUMED;
         });
@@ -141,62 +127,47 @@ public class DashboardActivity extends AppCompatActivity {
             if (roleString != null) {
                 try {
                     currentRole = UserRole.valueOf(roleString);
+                    loadDefaultFragment();
                 } catch (IllegalArgumentException e) {
                     showToast("Invalid role in session");
-                    return;
+
                 }
             } else {
                 showToast("No user role provided");
-                return;
+
             }
         }
 
-        setupNativeBottomNav(currentRole);
-        setupNavigationForRole(currentRole);
     }
 
-    /**
-     * Configures the bottom navigation menu based on user role.
-     * @param role The authenticated user's role
-     */
-    private void setupNativeBottomNav(UserRole role) {
-        switch (role) {
-            case PARTICIPANT:
-                navBtn1.setText("Activities");
-                navBtn2.setText("My Calendar");
-                navBtn3.setText("Progress");
-                break;
-            case PARENT:
-                navBtn1.setText("Activities");
-                navBtn2.setText("Feedback");
-                navBtn3.setText("Photos");
-                break;
+
+  /**
+   * load default fragment for each user like activities in each case */
+    private void loadDefaultFragment() {
+        Fragment defaultFragment = null;
+
+        switch (currentRole) {
             case COORDINATOR:
-                navBtn1.setText("Manage Activities");
-                navBtn2.setText("Instructors");
-                navBtn3.setText("Top Activities");
+                defaultFragment = new ManageActivitiesFragment();
+                break;
+            case PARTICIPANT:
+                defaultFragment = new ParticipantActivitiesFragment();
                 break;
             case INSTRUCTOR:
-                navBtn1.setText("Activities");
-                navBtn2.setText("Assigned Activities");
-                navBtn3.setText("Upload Photos");
+                defaultFragment = new InstructorActivitiesFragment();
+                break;
+            case PARENT:
+                defaultFragment = new ViewActivitiesWithPhotosFragment();
                 break;
             case SUPER_ADMIN:
-                navBtn1.setText("Activities");
-                navBtn2.setText("Users");
-                navBtn3.setText("Reviews");
+                defaultFragment = new ViewActivitiesFragment();
                 break;
-            default:
-                navBtn1.setText("Nav 1");
-                navBtn2.setText("Nav 2");
-                navBtn3.setText("Nav 3");
         }
 
-        navBtn1.setOnClickListener(v -> showToast(navBtn1.getText().toString()));
-        navBtn2.setOnClickListener(v -> showToast(navBtn2.getText().toString()));
-        navBtn3.setOnClickListener(v -> showToast(navBtn3.getText().toString()));
+        if (defaultFragment != null) {
+            loadFragment(defaultFragment);
+        }
     }
-
 
     /**
      * Inflates the top-right overflow menu.
@@ -325,40 +296,7 @@ public class DashboardActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     * Placeholder method to set up navigation based on user role.
-     * @param role The authenticated user's role
-     */
-    private void setupNavigationForRole(UserRole role) {
-        showToast("Logged in as: " + role.name());
-        if (role == UserRole.COORDINATOR) {
-            loadFragment(new ManageActivitiesFragment());
-            navBtn1.setOnClickListener(v -> loadFragment(new ManageActivitiesFragment()));
-            navBtn2.setOnClickListener(v -> loadFragment(new ManageInstructorsFragment()));
-        }
-        if (role == UserRole.PARTICIPANT) {
-            loadFragment(new ParticipantActivitiesFragment());
-            navBtn1.setOnClickListener(v -> loadFragment(new ParticipantActivitiesFragment()));
-        }
 
-        if (role == UserRole.INSTRUCTOR) {
-            loadFragment(new ViewActivitiesFragment());
-            navBtn1.setOnClickListener(v -> loadFragment(new ViewActivitiesFragment()));
-            navBtn2.setOnClickListener(v -> loadFragment(new InstructorActivitiesFragment()));
-
-        }
-
-        if (role == UserRole.PARENT) {
-            loadFragment(new ViewActivitiesFragment());
-            navBtn1.setOnClickListener(v -> loadFragment(new ViewActivitiesFragment()));
-        }
-
-        if (role == UserRole.SUPER_ADMIN) {
-            loadFragment(new ViewActivitiesFragment());
-            navBtn1.setOnClickListener(v -> loadFragment(new ViewActivitiesFragment()));
-        }
-
-    }
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
@@ -376,3 +314,12 @@ public class DashboardActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
+
+
+
+
+
+
+
+
+

@@ -54,7 +54,7 @@ public class ParentActivityAdapter extends ListAdapter<ActivityModel, ParentActi
     @NonNull
     @Override
     public ActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_activity_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_activity_parent, parent, false);
         return new ActivityViewHolder(v);
     }
 
@@ -95,7 +95,7 @@ public class ParentActivityAdapter extends ListAdapter<ActivityModel, ParentActi
      */
     static class ActivityViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvDomain, tvAgeRange, tvParticipants, tvDays, tvMonth, tvDescription;
-        ImageView btnEdit, btnDelete, btnToggleDesc;
+        ImageView btnToggleDesc;
 
         Button btnViewPhotos;
 

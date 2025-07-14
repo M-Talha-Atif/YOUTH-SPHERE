@@ -22,8 +22,6 @@ public class LoginFragment extends Fragment {
 
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
-    private FrameLayout loadingOverlay;
-    private ProgressBar loadingProgressBar;
 
     private final FirebaseAuthHelper firebaseAuthHelper = new FirebaseAuthHelper();
 
@@ -59,8 +57,8 @@ public class LoginFragment extends Fragment {
         emailEditText = rootView.findViewById(R.id.emailEditText);
         passwordEditText = rootView.findViewById(R.id.passwordEditText);
         loginButton = rootView.findViewById(R.id.loginButton);
-        loadingOverlay = rootView.findViewById(R.id.loadingOverlay);
-        loadingProgressBar = rootView.findViewById(R.id.loadingProgressBar);
+//        loadingOverlay = rootView.findViewById(R.id.loadingOverlay);
+//        loadingProgressBar = rootView.findViewById(R.id.loadingProgressBar);
 
         loginButton.setOnClickListener(v -> attemptLogin());
 
@@ -82,7 +80,7 @@ public class LoginFragment extends Fragment {
             return;
         }
 
-        showLoading(true);
+//        showLoading(true);
 
         firebaseAuthHelper.login(email, password)
                 .addOnSuccessListener(authResult -> {
@@ -94,7 +92,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void handleRoleSuccess(DocumentSnapshot document) {
-        showLoading(false);
+//        showLoading(false);
         if (document.exists() && document.contains("role")) {
             String role = document.getString("role");
             SessionManager sessionManager = new SessionManager(requireContext());
@@ -106,14 +104,14 @@ public class LoginFragment extends Fragment {
     }
 
     private void showError(String message) {
-        showLoading(false);
+//        showLoading(false);
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    private void showLoading(boolean show) {
-        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
-        loadingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
+//    private void showLoading(boolean show) {
+//        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+//        loadingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+//    }
 
     private void navigateToDashboard(String role) {
         Intent intent = new Intent(getContext(), DashboardActivity.class);
