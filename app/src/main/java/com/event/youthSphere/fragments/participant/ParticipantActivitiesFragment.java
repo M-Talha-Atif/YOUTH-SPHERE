@@ -47,6 +47,8 @@ public class ParticipantActivitiesFragment extends Fragment {
 
     EditText etStartDate, etEndDate;
 
+    Spinner spinnerDayFilter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -96,6 +98,15 @@ public class ParticipantActivitiesFragment extends Fragment {
         // date filter
         etStartDate.setFocusable(false);
         etStartDate.setOnClickListener(v -> showDatePicker(etStartDate));
+
+        // days filter
+
+        spinnerDayFilter = rootView.findViewById(R.id.spinnerDayFilter);
+
+        List<String> dayOptions = Arrays.asList("All Days", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dayOptions);
+        spinnerDayFilter.setAdapter(dayAdapter);
+        spinnerDayFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
 
         etEndDate.setFocusable(false);
         etEndDate.setOnClickListener(v -> showDatePicker(etEndDate));
@@ -245,6 +256,10 @@ public class ParticipantActivitiesFragment extends Fragment {
         Date start = parseDateSafe(etStartDate.getText().toString());
         Date end = parseDateSafe(etEndDate.getText().toString());
 
+
+        String selectedDay = spinnerDayFilter.getSelectedItem().toString();
+        boolean filterByDay = !selectedDay.equals("All Days");
+
         List<ActivityModel> filtered = new ArrayList<>();
         for (ActivityModel a : activityList) {
             boolean matchesSearch = a.getName().toLowerCase().contains(searchText)
@@ -267,7 +282,11 @@ public class ParticipantActivitiesFragment extends Fragment {
             }
 
 
-            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants) {
+            boolean matchesDay = !filterByDay || (a.getDays() != null && a.getDays().contains(selectedDay));
+
+
+
+            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants && matchesDay) {
                 filtered.add(a);
             }
         }

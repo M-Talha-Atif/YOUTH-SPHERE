@@ -55,6 +55,8 @@ public class ManageActivitiesFragment extends Fragment {
 
     EditText etStartDate, etEndDate;
 
+    Spinner spinnerDayFilter;
+
 
 
     @Nullable
@@ -90,6 +92,16 @@ public class ManageActivitiesFragment extends Fragment {
         etMinAge.setFilters(positiveFilter);
         etMaxAge.setFilters(positiveFilter);
         etMaxParticipants.setFilters(positiveFilter);
+
+
+
+        spinnerDayFilter = rootView.findViewById(R.id.spinnerDayFilter);
+
+        List<String> dayOptions = Arrays.asList("All Days", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dayOptions);
+        spinnerDayFilter.setAdapter(dayAdapter);
+        spinnerDayFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+
 
 
 
@@ -330,6 +342,12 @@ public class ManageActivitiesFragment extends Fragment {
 
         String selectedInstructorId = instructorNameToId.get(selectedInstructor);
 
+
+
+        String selectedDay = spinnerDayFilter.getSelectedItem().toString();
+        boolean filterByDay = !selectedDay.equals("All Days");
+
+
         int minAge = parseIntSafe(etMinAge.getText().toString(), -1);
         int maxAge = parseIntSafe(etMaxAge.getText().toString(), -1);
         int maxParticipantsFilter = parseIntSafe(etMaxParticipants.getText().toString(), -1);
@@ -359,7 +377,11 @@ public class ManageActivitiesFragment extends Fragment {
                     || activity.getMaxParticipants() <= maxParticipantsFilter;
 
 
-            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants) {
+            boolean matchesDay = !filterByDay || (activity.getDays() != null && activity.getDays().contains(selectedDay));
+
+
+
+            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants && matchesDay) {
                 filtered.add(activity);
             }
 

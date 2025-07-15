@@ -6,6 +6,11 @@ public abstract class User implements RoleUser {
     protected String fullName;
     protected String role;
 
+
+    public User() {
+
+    }
+
     public User(String uid, String email, String fullName, String role) {
         this.uid = uid;
         this.email = email;

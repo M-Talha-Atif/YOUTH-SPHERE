@@ -1,9 +1,12 @@
 package com.event.youthSphere.firebase;
 
+import com.event.youthSphere.models.users.ParticipantUser;
+import com.event.youthSphere.models.users.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.text.SimpleDateFormat;
@@ -15,7 +18,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class FirebaseInstructorHelper {
 
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    public interface OnParticipantsLoaded {
+        void onLoaded(List<User> participants, Exception error);
+    }
 
     public static void getInstructorActivities(String instructorId, OnCompleteListener<QuerySnapshot> listener) {
         db.collection("activities")
@@ -63,6 +70,50 @@ public class FirebaseInstructorHelper {
                     callback.accept(images, null);
                 })
                 .addOnFailureListener(e -> callback.accept(null, e));
+    }
+
+    public static void getParticipantsForActivity(String activityId, OnParticipantsLoaded callback) {
+        db.collection("enrollments")
+                .whereEqualTo("activityId", activityId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<User> participants = new ArrayList<>();
+                    if (querySnapshot.isEmpty()) {
+                        callback.onLoaded(participants, null);
+                        return;
+                    }
+
+                    final int total = querySnapshot.size();
+                    final int[] loaded = {0};
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        String participantId = doc.getString("participantId");
+                        if (participantId == null) {
+                            loaded[0]++;
+                            if (loaded[0] == total) callback.onLoaded(participants, null);
+                            continue;
+                        }
+
+                        db.collection("users")
+                                .document(participantId)
+                                .get()
+                                .addOnSuccessListener(userDoc -> {
+                                    if (userDoc.exists()) {
+                                        ParticipantUser p = userDoc.toObject(ParticipantUser.class);
+                                        if (p != null) {
+                                            participants.add(p);
+                                        }
+                                    }
+                                    loaded[0]++;
+                                    if (loaded[0] == total) callback.onLoaded(participants, null);
+                                })
+                                .addOnFailureListener(e -> {
+                                    loaded[0]++;
+                                    if (loaded[0] == total) callback.onLoaded(participants, null);
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> callback.onLoaded(null, e));
     }
 
 }

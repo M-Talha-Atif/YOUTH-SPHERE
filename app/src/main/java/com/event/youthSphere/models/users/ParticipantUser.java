@@ -9,6 +9,14 @@ public class ParticipantUser extends User {
 
     private List<String> activityIds;
 
+    public ParticipantUser() {
+        super();
+    }
+
+
+
+
+
     public ParticipantUser(String uid, String email, String fullName, List<String> activityIds) {
         super(uid, email, fullName, "PARTICIPANT");
         this.activityIds = activityIds;

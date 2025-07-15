@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.*;
 import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.InstructorActivityAdapter;
+import com.event.youthSphere.bottomsheet.instructor.GiveFeedbackDialogFragment;
 import com.event.youthSphere.bottomsheet.instructor.UploadPhotoDialogFragment;
 import com.event.youthSphere.bottomsheet.instructor.ViewPhotosDialogFragment;
 import com.event.youthSphere.firebase.FirebaseInstructorHelper;
@@ -47,6 +48,20 @@ public class InstructorActivitiesFragment extends Fragment {
 
             @Override
             public void onGiveFeedback(ActivityModel activity) {
+                FirebaseInstructorHelper.getParticipantsForActivity(activity.getId(), (participantsList, error) -> {
+                    if (error != null || participantsList == null || participantsList.isEmpty()) {
+                        Toast.makeText(getContext(), "No participants found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    GiveFeedbackDialogFragment dialog = new GiveFeedbackDialogFragment(
+                            activity,
+                            participantsList,
+                            currentInstructorId,
+                            true // instructor
+                    );
+                    dialog.show(getParentFragmentManager(), "GiveFeedbackDialog");
+                });
                 Toast.makeText(getContext(), "Give feedback for: " + activity.getName(), Toast.LENGTH_SHORT).show();
             }
 

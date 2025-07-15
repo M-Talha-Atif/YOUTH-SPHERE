@@ -53,6 +53,9 @@ public class ViewActivitiesFragment extends Fragment {
 
     EditText etStartDate, etEndDate;
 
+    Spinner spinnerDayFilter;
+
+
 
     @Nullable
     @Override
@@ -137,6 +140,16 @@ public class ViewActivitiesFragment extends Fragment {
         // date filter
         etStartDate.setFocusable(false);
         etStartDate.setOnClickListener(v -> showDatePicker(etStartDate));
+
+        // days filter
+
+        spinnerDayFilter = rootView.findViewById(R.id.spinnerDayFilter);
+
+        List<String> dayOptions = Arrays.asList("All Days", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dayOptions);
+        spinnerDayFilter.setAdapter(dayAdapter);
+        spinnerDayFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+
 
 
         adapter.setOnDeleteClickListener(activity -> {
@@ -300,6 +313,10 @@ public class ViewActivitiesFragment extends Fragment {
         String searchText = etSearch.getText().toString().toLowerCase();
         String selectedInstructor = spinnerInstructorFilter.getSelectedItem().toString();
 
+        String selectedDay = spinnerDayFilter.getSelectedItem().toString();
+        boolean filterByDay = !selectedDay.equals("All Days");
+
+
 
         Date start = parseDateSafe(etStartDate.getText().toString());
         Date end = parseDateSafe(etEndDate.getText().toString());
@@ -334,10 +351,14 @@ public class ViewActivitiesFragment extends Fragment {
                 matchesDate = ! activity .getEndDate().after(end);
             }
 
+            boolean matchesDay = !filterByDay || (activity.getDays() != null && activity.getDays().contains(selectedDay));
 
-            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants) {
-                filtered.add( activity );
+
+
+            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants && matchesDay) {
+                filtered.add(activity);
             }
+
         }
 
         adapter.submitList(filtered);
