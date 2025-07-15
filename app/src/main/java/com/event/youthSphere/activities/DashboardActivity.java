@@ -20,6 +20,7 @@ import com.event.youthSphere.fragments.coordinator.ManageActivitiesFragment;
 import com.event.youthSphere.fragments.coordinator.ManageInstructorsFragment;
 import com.event.youthSphere.fragments.instructor.InstructorActivitiesFragment;
 import com.event.youthSphere.fragments.parent.AllActivityPhotosFragment;
+import com.event.youthSphere.fragments.parent.ManageChildrenFragment;
 import com.event.youthSphere.fragments.parent.ViewActivitiesWithPhotosFragment;
 import com.event.youthSphere.fragments.participant.ParticipantActivitiesFragment;
 import com.event.youthSphere.models.UserRole;
@@ -264,7 +265,8 @@ public class DashboardActivity extends AppCompatActivity {
                 loadFragment(new ViewActivitiesWithPhotosFragment());
                 return true;
             case ID_MENU_FEEDBACK:
-                showToast("Feedback - Fragment not implemented yet");
+                loadFragment(new ManageChildrenFragment());
+//                showToast("Feedback - Fragment not implemented yet");
                 return true;
             case ID_MENU_PHOTOS:
                 loadFragment(new AllActivityPhotosFragment());

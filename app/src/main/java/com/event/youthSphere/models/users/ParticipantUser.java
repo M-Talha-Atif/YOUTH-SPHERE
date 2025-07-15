@@ -32,5 +32,11 @@ public class ParticipantUser extends User {
         map.put("activityIds", activityIds);
         return map;
     }
+
+    @Override
+    public String toString() {
+        return getFullName();
+    }
+
 }
 

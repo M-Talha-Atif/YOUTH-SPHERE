@@ -8,6 +8,10 @@ public class ParentUser extends User {
 
     private List<String> childIds;
 
+    public ParentUser() {
+        super();
+    }
+
     public ParentUser(String uid, String email, String fullName, List<String> childIds) {
         super(uid, email, fullName, "PARENT");
         this.childIds = childIds;
@@ -22,5 +26,13 @@ public class ParentUser extends User {
         map.put("role", role);
         map.put("childIds", childIds);
         return map;
+    }
+
+    public List<String> getChildIds() {
+        return childIds;
+    }
+
+    public void setChildIds(List<String> childIds) {
+        this.childIds = childIds;
     }
 }

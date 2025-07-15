@@ -49,7 +49,7 @@ public class AllActivityPhotosFragment extends Fragment {
         adapter = new ImageGalleryAdapter(filteredList);
         recyclerView.setAdapter(adapter);
 
-        List<String> domains = Arrays.asList("All Domains", "SPORTS", "ART", "MUSIC", "SCIENCE"); // Add actual domains
+    List<String> domains = Arrays.asList("All Domains", "SOCIETY", "CREATIVITY", "SCIENCE"); // Add actual domains
         spinnerDomain.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, domains));
 
         spinnerDomain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
