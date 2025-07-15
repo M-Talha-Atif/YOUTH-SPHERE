@@ -1,5 +1,6 @@
 package com.event.youthSphere.fragments.coordinator;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -44,7 +45,6 @@ public class ManageActivitiesFragment extends Fragment {
 
     EditText etSearch;
     Spinner spinnerInstructorFilter;
-    Spinner spinnerMonthFilter;
 
     private final Map<String, String> instructorNameToId = new HashMap<>();
     private final Handler searchHandler = new Handler();
@@ -52,6 +52,9 @@ public class ManageActivitiesFragment extends Fragment {
     private Runnable searchRunnable;
 
     EditText etMinAge, etMaxAge, etMaxParticipants;
+
+    EditText etStartDate, etEndDate;
+
 
 
     @Nullable
@@ -64,10 +67,12 @@ public class ManageActivitiesFragment extends Fragment {
         Button btnAssignActivity = rootView.findViewById(R.id.btnAssignActivity);
         etSearch = rootView.findViewById(R.id.etSearch);
         spinnerInstructorFilter = rootView.findViewById(R.id.spinnerInstructorFilter);
-        spinnerMonthFilter = rootView.findViewById(R.id.spinnerMonthFilter);
         etMinAge = rootView.findViewById(R.id.etMinAge);
         etMaxAge = rootView.findViewById(R.id.etMaxAge);
         etMaxParticipants = rootView.findViewById(R.id.etMaxParticipants);
+        etStartDate = rootView.findViewById(R.id.etStartDate);
+        etEndDate = rootView.findViewById(R.id.etEndDate);
+
 
         InputFilter[] positiveFilter = new InputFilter[]{
                 (source, start, end, dest, dstart, dend) -> {
@@ -85,6 +90,7 @@ public class ManageActivitiesFragment extends Fragment {
         etMinAge.setFilters(positiveFilter);
         etMaxAge.setFilters(positiveFilter);
         etMaxParticipants.setFilters(positiveFilter);
+
 
 
 
@@ -117,18 +123,6 @@ public class ManageActivitiesFragment extends Fragment {
         });
 
 
-        List<String> months = Arrays.asList("All Months", "January", "February", "March", "April", "May",
-                "June", "July", "August", "September", "October", "November", "December");
-
-
-        if (isSafe()) {
-
-            ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(getContext(),
-                    android.R.layout.simple_spinner_dropdown_item, months);
-            spinnerMonthFilter.setAdapter(monthAdapter);
-            spinnerMonthFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
-
-        }
 
         etSearch.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -202,9 +196,28 @@ public class ManageActivitiesFragment extends Fragment {
             }
         };
 
+        // date filter
+
+        etStartDate.setFocusable(false);
+        etStartDate.setOnClickListener(v -> showDatePicker(etStartDate));
+
+        etEndDate.setFocusable(false);
+        etEndDate.setOnClickListener(v -> showDatePicker(etEndDate));
+
+
         etMinAge.addTextChangedListener(autoFilterWatcher);
         etMaxAge.addTextChangedListener(autoFilterWatcher);
         etMaxParticipants.addTextChangedListener(autoFilterWatcher);
+
+        etStartDate.setOnClickListener(v -> {
+            showDatePicker(etStartDate);
+            applyFilters();
+        });
+        etEndDate.setOnClickListener(v -> {
+            showDatePicker(etEndDate);
+            applyFilters();
+        });
+
 
 
         return rootView;
@@ -275,13 +288,45 @@ public class ManageActivitiesFragment extends Fragment {
         }
     }
 
+    private Date parseDateSafe(String str) {
+        try {
+            return new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(str.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void showDatePicker(EditText targetEditText) {
+        Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                (view, year, month, dayOfMonth) -> {
+                    // Format selected date
+                    String dateString = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                    targetEditText.setText(dateString);
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+
+        datePickerDialog.show();
+    }
+
+
+
 
     private void applyFilters() {
-        if (spinnerInstructorFilter.getSelectedItem() == null || spinnerMonthFilter.getSelectedItem() == null) return;
+        if (spinnerInstructorFilter.getSelectedItem() == null) return;
+
+
+        Date start = parseDateSafe(etStartDate.getText().toString());
+        Date end = parseDateSafe(etEndDate.getText().toString());
+
+
 
         String searchText = etSearch.getText().toString().toLowerCase();
         String selectedInstructor = spinnerInstructorFilter.getSelectedItem().toString();
-        String selectedMonth = spinnerMonthFilter.getSelectedItem().toString();
 
         String selectedInstructorId = instructorNameToId.get(selectedInstructor);
 
@@ -298,8 +343,14 @@ public class ManageActivitiesFragment extends Fragment {
             boolean matchesInstructor = selectedInstructor.equals("All Instructors")
                     || (selectedInstructorId != null && selectedInstructorId.equals(activity.getInstructorId()));
 
-            boolean matchesMonth = selectedMonth.equals("All Months")
-                    || (activity.getMonth() != null && activity.getMonth().toLowerCase().startsWith(selectedMonth.toLowerCase()));
+
+            boolean matchesDate = true;
+            if (start != null && activity.getStartDate() != null) {
+                matchesDate = !activity.getStartDate().before(start);
+            }
+            if (matchesDate && end != null && activity.getEndDate() != null) {
+                matchesDate = !activity.getEndDate().after(end);
+            }
 
             boolean matchesAgeRange = (minAge == -1 || activity.getMinAge() >= minAge)
                     && (maxAge == -1 || activity.getMaxAge() <= maxAge);
@@ -308,9 +359,10 @@ public class ManageActivitiesFragment extends Fragment {
                     || activity.getMaxParticipants() <= maxParticipantsFilter;
 
 
-            if (matchesSearch && matchesInstructor && matchesMonth && matchesAgeRange && matchesParticipants) {
+            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants) {
                 filtered.add(activity);
             }
+
 
         }
 

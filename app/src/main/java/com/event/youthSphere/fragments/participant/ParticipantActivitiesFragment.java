@@ -1,5 +1,6 @@
 package com.event.youthSphere.fragments.participant;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -35,7 +36,7 @@ public class ParticipantActivitiesFragment extends Fragment {
     private View rootView;
 
     private EditText etSearch, etMinAge, etMaxAge, etMaxParticipants;
-    private Spinner spinnerInstructorFilter, spinnerMonthFilter;
+    private Spinner spinnerInstructorFilter;
 
     private final Map<String, String> instructorNameToId = new HashMap<>();
     private final Handler searchHandler = new Handler();
@@ -43,6 +44,8 @@ public class ParticipantActivitiesFragment extends Fragment {
     private Runnable searchRunnable;
 
     private String currentUserId;
+
+    EditText etStartDate, etEndDate;
 
     @Nullable
     @Override
@@ -65,10 +68,11 @@ public class ParticipantActivitiesFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recyclerActivities);
         etSearch = rootView.findViewById(R.id.etSearch);
         spinnerInstructorFilter = rootView.findViewById(R.id.spinnerInstructorFilter);
-        spinnerMonthFilter = rootView.findViewById(R.id.spinnerMonthFilter);
         etMinAge = rootView.findViewById(R.id.etMinAge);
         etMaxAge = rootView.findViewById(R.id.etMaxAge);
         etMaxParticipants = rootView.findViewById(R.id.etMaxParticipants);
+        etStartDate = rootView.findViewById(R.id.etStartDate);
+        etEndDate = rootView.findViewById(R.id.etEndDate);
 
         adapter = new ParticipantActivityAdapter();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -89,16 +93,41 @@ public class ParticipantActivitiesFragment extends Fragment {
         etMinAge.setFilters(positiveFilter);
         etMaxAge.setFilters(positiveFilter);
         etMaxParticipants.setFilters(positiveFilter);
+        // date filter
+        etStartDate.setFocusable(false);
+        etStartDate.setOnClickListener(v -> showDatePicker(etStartDate));
+
+        etEndDate.setFocusable(false);
+        etEndDate.setOnClickListener(v -> showDatePicker(etEndDate));
     }
 
+    private void showDatePicker(EditText targetEditText) {
+        Calendar calendar = Calendar.getInstance();
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                (view, year, month, dayOfMonth) -> {
+                    // Format selected date
+                    String dateString = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                    targetEditText.setText(dateString);
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+
+        datePickerDialog.show();
+    }
+
+    private Date parseDateSafe(String str) {
+        try {
+            return new java.text.SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(str.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
     private void setupFilters() {
-        // Spinner Data
-        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                Arrays.asList("All Months", "January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"));
-        spinnerMonthFilter.setAdapter(monthAdapter);
-        spinnerMonthFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
 
         Set<String> uniqueInstructorNamesSet = new HashSet<>();
         List<String> instructorNames = new ArrayList<>(List.of("All Instructors"));
@@ -207,11 +236,14 @@ public class ParticipantActivitiesFragment extends Fragment {
 
         String searchText = etSearch.getText().toString().toLowerCase();
         String selectedInstructor = Objects.toString(spinnerInstructorFilter.getSelectedItem(), "All Instructors");
-        String selectedMonth = Objects.toString(spinnerMonthFilter.getSelectedItem(), "All Months");
         String selectedInstructorId = instructorNameToId.get(selectedInstructor);
         int minAge = parseIntSafe(etMinAge.getText().toString(), -1);
         int maxAge = parseIntSafe(etMaxAge.getText().toString(), -1);
         int maxParticipants = parseIntSafe(etMaxParticipants.getText().toString(), -1);
+
+
+        Date start = parseDateSafe(etStartDate.getText().toString());
+        Date end = parseDateSafe(etEndDate.getText().toString());
 
         List<ActivityModel> filtered = new ArrayList<>();
         for (ActivityModel a : activityList) {
@@ -222,13 +254,20 @@ public class ParticipantActivitiesFragment extends Fragment {
             boolean matchesInstructor = selectedInstructor.equals("All Instructors")
                     || (selectedInstructorId != null && selectedInstructorId.equals(a.getInstructorId()));
 
-            boolean matchesMonth = selectedMonth.equals("All Months")
-                    || (a.getMonth() != null && a.getMonth().equalsIgnoreCase(selectedMonth));
 
-            boolean matchesAge = (minAge == -1 || a.getMinAge() >= minAge) && (maxAge == -1 || a.getMaxAge() <= maxAge);
+            boolean matchesAgeRange = (minAge == -1 || a.getMinAge() >= minAge) && (maxAge == -1 || a.getMaxAge() <= maxAge);
             boolean matchesParticipants = maxParticipants == -1 || a.getMaxParticipants() <= maxParticipants;
 
-            if (matchesSearch && matchesInstructor && matchesMonth && matchesAge && matchesParticipants) {
+            boolean matchesDate = true;
+            if (start != null && a.getStartDate() != null) {
+                matchesDate = !a.getStartDate().before(start);
+            }
+            if (matchesDate && end != null && a.getEndDate() != null) {
+                matchesDate = !a.getEndDate().after(end);
+            }
+
+
+            if (matchesSearch && matchesInstructor && matchesDate && matchesAgeRange && matchesParticipants) {
                 filtered.add(a);
             }
         }
