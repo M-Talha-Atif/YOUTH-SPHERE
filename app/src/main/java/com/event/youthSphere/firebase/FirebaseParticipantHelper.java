@@ -1,8 +1,13 @@
 package com.event.youthSphere.firebase;
 
+import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.participant.EnrollmentModel;
 import com.event.youthSphere.models.participant.ParticipantProgressData;
 import com.event.youthSphere.models.participant.FeedbackModel;
+import com.event.youthSphere.utils.TaskUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -79,4 +84,43 @@ public class FirebaseParticipantHelper {
                     .addOnFailureListener(e -> callback.accept(null, e));
         });
     }
+
+    public static void getRegisteredActivities(String participantId, BiConsumer<List<ActivityModel>, Exception> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("enrollments")
+                .whereEqualTo("participantId", participantId)
+                .get()
+                .addOnSuccessListener(query -> {
+                    if (query.isEmpty()) {
+                        callback.accept(new ArrayList<>(), null);
+                        return;
+                    }
+
+                    List<ActivityModel> activities = new ArrayList<>();
+                    List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
+                    for (DocumentSnapshot snapshot : query.getDocuments()) {
+                        String activityId = snapshot.getString("activityId");
+                        if (activityId != null) {
+                            Task<DocumentSnapshot> task = db.collection("activities").document(activityId).get();
+                            tasks.add(task);
+                        }
+                    }
+
+                    Tasks.whenAllSuccess(tasks).addOnSuccessListener(results -> {
+                        for (Object obj : results) {
+                            if (obj instanceof DocumentSnapshot) {
+                                DocumentSnapshot doc = (DocumentSnapshot) obj;
+                                ActivityModel model = doc.toObject(ActivityModel.class);
+                                if (model != null) activities.add(model);
+                            }
+                        }
+                        callback.accept(activities, null);
+                    }).addOnFailureListener(e -> callback.accept(null, e));
+                })
+                .addOnFailureListener(e -> callback.accept(null, e));
+    }
+
+
 }
