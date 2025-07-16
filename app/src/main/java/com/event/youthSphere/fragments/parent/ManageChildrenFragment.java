@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.*;
 
 import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.ChildrenListAdapter;
+import com.event.youthSphere.bottomsheet.parent.GiveFeedbackDialogFragment;
 import com.event.youthSphere.firebase.FirebaseParentHelper;
 import com.event.youthSphere.models.users.ParticipantUser;
 
@@ -38,7 +39,13 @@ public class ManageChildrenFragment extends Fragment {
         addChildLayout = rootView.findViewById(R.id.addChildLayout);
 
         recyclerViewChildren.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ChildrenListAdapter();
+
+        // functional interface function implementation
+        adapter = new ChildrenListAdapter(user -> {
+            GiveFeedbackDialogFragment dialog = new GiveFeedbackDialogFragment(user);
+            dialog.show(getParentFragmentManager(), "GiveFeedbackDialog");
+        });
+
         recyclerViewChildren.setAdapter(adapter);
 
         loadChildren();

@@ -23,6 +23,8 @@ import com.event.youthSphere.fragments.parent.AllActivityPhotosFragment;
 import com.event.youthSphere.fragments.parent.ManageChildrenFragment;
 import com.event.youthSphere.fragments.parent.ViewActivitiesWithPhotosFragment;
 import com.event.youthSphere.fragments.participant.ParticipantActivitiesFragment;
+import com.event.youthSphere.fragments.participant.ParticipantProgressFragment;
+import com.event.youthSphere.fragments.superadmin.SuperAdminActivitiesFragment;
 import com.event.youthSphere.models.UserRole;
 import com.event.youthSphere.utils.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -246,6 +248,7 @@ public class DashboardActivity extends AppCompatActivity {
                 showToast("My Calendar - Fragment not implemented yet");
                 return true;
             case ID_MENU_PROGRESS:
+                loadFragment(new ParticipantProgressFragment());
                 showToast("Progress - Fragment not implemented yet");
                 return true;
 
@@ -274,7 +277,7 @@ public class DashboardActivity extends AppCompatActivity {
 
             // Super Admin
             case ID_MENU_SUPER_ACTIVITIES:
-                loadFragment(new ViewActivitiesFragment());
+                loadFragment(new SuperAdminActivitiesFragment());
                 return true;
             case ID_MENU_USERS:
                 showToast("Users - Fragment not implemented yet");

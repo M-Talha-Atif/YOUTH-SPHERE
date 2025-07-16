@@ -16,7 +16,7 @@ public class FirebaseEnrollmentHelper {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final long startTimeMillis = System.currentTimeMillis();
-    private static final long endTimeMillis = startTimeMillis +   10 * 1000;
+    private static final long endTimeMillis = startTimeMillis +   250 * 1000;
 
     public static void enrollUser(String participantId, String activityId, OnCompleteListener<Void> listener) {
         long now = System.currentTimeMillis();

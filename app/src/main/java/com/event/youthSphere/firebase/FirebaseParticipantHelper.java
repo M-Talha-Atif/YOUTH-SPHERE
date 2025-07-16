@@ -1,0 +1,82 @@
+package com.event.youthSphere.firebase;
+
+import com.event.youthSphere.models.participant.EnrollmentModel;
+import com.event.youthSphere.models.participant.ParticipantProgressData;
+import com.event.youthSphere.models.participant.FeedbackModel;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+
+public class FirebaseParticipantHelper {
+
+    public static void getProgressData(String participantId, BiConsumer<ParticipantProgressData, Exception> callback) {
+        FirebaseEnrollmentHelper.getUserEnrollments(participantId, enrollmentTask -> {
+            List<EnrollmentModel> enrollments = enrollmentTask.getResult();
+
+            if (enrollments == null || enrollments.isEmpty()) {
+                callback.accept(new ParticipantProgressData(), null); // empty data
+                return;
+            }
+
+            FirebaseFirestore.getInstance()
+                    .collection("feedback")
+                    .whereEqualTo("participantId", participantId)
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
+                        List<FeedbackModel> feedbackList = new ArrayList<>();
+                        for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                            FeedbackModel model = doc.toObject(FeedbackModel.class);
+                            if (model != null && model.getRating() > 0)
+                                feedbackList.add(model);
+                        }
+
+                        Map<String, Integer> domainCount = new HashMap<>();
+                        Map<String, List<Integer>> domainRatings = new HashMap<>();
+
+                        AtomicInteger totalScore = new AtomicInteger(0);
+                        AtomicInteger scoreCount = new AtomicInteger(0);
+                        AtomicInteger loaded = new AtomicInteger(0);
+
+                        int total = enrollments.size();
+
+                        for (EnrollmentModel enrollment : enrollments) {
+                            FirebaseFirestore.getInstance().collection("activities")
+                                    .document(enrollment.getActivityId())
+                                    .get()
+                                    .addOnSuccessListener(activityDoc -> {
+                                        String domain = activityDoc.getString("domain");
+                                        if (domain == null) domain = "Unknown";
+
+                                        domainCount.put(domain, domainCount.getOrDefault(domain, 0) + 1);
+
+                                        for (FeedbackModel f : feedbackList) {
+                                            if (f.getActivityId().equals(enrollment.getActivityId())) {
+                                                totalScore.addAndGet(f.getRating());
+                                                scoreCount.incrementAndGet();
+
+                                                domainRatings.putIfAbsent(domain, new ArrayList<>());
+                                                domainRatings.get(domain).add(f.getRating());
+                                            }
+                                        }
+
+                                        if (loaded.incrementAndGet() == total) {
+                                            ParticipantProgressData data = new ParticipantProgressData();
+                                            data.setTotalActivities(total);
+                                            data.setAverageScore(scoreCount.get() == 0 ? 0 : totalScore.get() / (float) scoreCount.get());
+                                            data.setDomainParticipation(domainCount);
+                                            data.setDomainAvgScores(domainRatings);
+                                            callback.accept(data, null);
+                                        }
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> callback.accept(null, e));
+        });
+    }
+}

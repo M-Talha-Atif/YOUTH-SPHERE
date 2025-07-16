@@ -4,6 +4,8 @@ package com.event.youthSphere.firebase;
 import com.event.youthSphere.models.participant.FeedbackModel;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.function.BiConsumer;
+
 public class FirebaseFeedbackHelper {
 
     private static final String COLLECTION_NAME = "feedback";
@@ -31,6 +33,18 @@ public class FirebaseFeedbackHelper {
                 })
                 .addOnFailureListener(listener::onFailure);
     }
+
+    public static void checkInstructorFeedbackExists(String activityId, String participantId, BiConsumer<Boolean, Exception> callback) {
+        FirebaseFirestore.getInstance()
+                .collection("feedback")
+                .whereEqualTo("activityId", activityId)
+                .whereEqualTo("participantId", participantId)
+                .whereNotEqualTo("instructorId", null)
+                .get()
+                .addOnSuccessListener(snapshot -> callback.accept(!snapshot.isEmpty(), null))
+                .addOnFailureListener(e -> callback.accept(false, e));
+    }
+
 
     public interface OnFeedbackAddedListener {
         void onSuccess();

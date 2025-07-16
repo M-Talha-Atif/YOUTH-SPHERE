@@ -69,6 +69,10 @@ public class ActivityModel {
         return id.hashCode(); // optional but recommended for collections
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 
     // Getters and setters
 

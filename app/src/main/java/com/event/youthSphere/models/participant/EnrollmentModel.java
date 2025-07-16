@@ -23,6 +23,13 @@ public class EnrollmentModel {
         this.description = description;
     }
 
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
+
     public String getEnrollmentId() {
         return enrollmentId;
     }

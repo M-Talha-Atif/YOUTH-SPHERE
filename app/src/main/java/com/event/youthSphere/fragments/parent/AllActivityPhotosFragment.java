@@ -15,7 +15,6 @@ import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.ImageGalleryAdapter;
 import com.event.youthSphere.firebase.FirebaseInstructorHelper;
 import com.event.youthSphere.models.activity.ActivityImageModel;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -49,7 +48,7 @@ public class AllActivityPhotosFragment extends Fragment {
         adapter = new ImageGalleryAdapter(filteredList);
         recyclerView.setAdapter(adapter);
 
-    List<String> domains = Arrays.asList("All Domains", "SOCIETY", "CREATIVITY", "SCIENCE"); // Add actual domains
+        List<String> domains = Arrays.asList("All Domains", "SOCIETY", "CREATIVITY", "SCIENCE"); // Add actual domains
         spinnerDomain.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, domains));
 
         spinnerDomain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

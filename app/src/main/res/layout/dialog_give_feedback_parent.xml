@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <Spinner android:id="@+id/activitySpinner"
+        android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Instructor's Comment:" android:paddingTop="10dp"/>
+
+    <TextView android:id="@+id/instructorCommentView"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textStyle="italic"/>
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Instructor's Rating:" android:paddingTop="10dp"/>
+
+    <TextView android:id="@+id/instructorRatingView"
+        android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    <EditText android:id="@+id/parentCommentInput"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:hint="Your Comment"/>
+
+    <EditText
+        android:id="@+id/parentRatingInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter rating (1-10)"
+        android:inputType="number"
+        android:maxLength="2"/>
+
+    <Button android:id="@+id/btnSubmitFeedback"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Submit Feedback"/>
+</LinearLayout>

@@ -1,6 +1,7 @@
 package com.event.youthSphere.adapters;
 
 import android.view.*;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,16 @@ import java.util.List;
 public class ChildrenListAdapter extends RecyclerView.Adapter<ChildrenListAdapter.ChildViewHolder> {
 
     private List<ParticipantUser> childList = new ArrayList<>();
+    private OnFeedbackClickListener feedbackClickListener;
+
+    // functional interface
+    public interface OnFeedbackClickListener {
+        void onGiveFeedbackClick(ParticipantUser user);
+    }
+
+    public ChildrenListAdapter(OnFeedbackClickListener listener) {
+        this.feedbackClickListener = listener;
+    }
 
     public void submitList(List<ParticipantUser> list) {
         this.childList = list;
@@ -31,6 +42,12 @@ public class ChildrenListAdapter extends RecyclerView.Adapter<ChildrenListAdapte
         ParticipantUser child = childList.get(position);
         holder.tvChildName.setText(child.getFullName());
         holder.tvChildEmail.setText(child.getEmail());
+
+        holder.btnGiveFeedback.setOnClickListener(v -> {
+            if (feedbackClickListener != null) {
+                feedbackClickListener.onGiveFeedbackClick(child);
+            }
+        });
     }
 
     @Override
@@ -41,10 +58,13 @@ public class ChildrenListAdapter extends RecyclerView.Adapter<ChildrenListAdapte
     static class ChildViewHolder extends RecyclerView.ViewHolder {
         TextView tvChildName, tvChildEmail;
 
+        Button btnGiveFeedback;
+
         public ChildViewHolder(@NonNull View itemView) {
             super(itemView);
             tvChildName = itemView.findViewById(R.id.tvChildName);
             tvChildEmail = itemView.findViewById(R.id.tvChildEmail);
+            btnGiveFeedback = itemView.findViewById(R.id.btnGiveFeedback);
         }
     }
 }

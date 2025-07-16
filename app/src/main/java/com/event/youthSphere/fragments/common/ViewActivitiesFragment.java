@@ -247,20 +247,6 @@ public class ViewActivitiesFragment extends Fragment {
         loadActivities();
     }
 
-    private void showAddActivityBottomSheet() {
-        AddActivityBottomSheetDialog bottomSheet = new AddActivityBottomSheetDialog(() -> {
-            if (isAdded() && rootView != null) {
-                loadActivities();
-                Snackbar.make(rootView, R.string.snackbar_activity_added, Snackbar.LENGTH_SHORT).show();
-            }
-        });
-        bottomSheet.show(getParentFragmentManager(), "AddActivitySheet");
-    }
-
-    private void showAssignActivityBottomSheet() {
-        AssignActivityBottomSheetDialog dialog = new AssignActivityBottomSheetDialog();
-        dialog.show(getParentFragmentManager(), "AssignActivityBottomSheet");
-    }
 
     private void loadActivities() {
         if (!isSafe()) return;
