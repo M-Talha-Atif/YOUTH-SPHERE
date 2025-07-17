@@ -57,8 +57,6 @@ public class LoginFragment extends Fragment {
         emailEditText = rootView.findViewById(R.id.emailEditText);
         passwordEditText = rootView.findViewById(R.id.passwordEditText);
         loginButton = rootView.findViewById(R.id.loginButton);
-//        loadingOverlay = rootView.findViewById(R.id.loadingOverlay);
-//        loadingProgressBar = rootView.findViewById(R.id.loadingProgressBar);
 
         loginButton.setOnClickListener(v -> attemptLogin());
 
@@ -80,8 +78,6 @@ public class LoginFragment extends Fragment {
             return;
         }
 
-//        showLoading(true);
-
         firebaseAuthHelper.login(email, password)
                 .addOnSuccessListener(authResult -> {
                     firebaseAuthHelper.getUserRole()
@@ -92,7 +88,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void handleRoleSuccess(DocumentSnapshot document) {
-//        showLoading(false);
+
         if (document.exists() && document.contains("role")) {
             String role = document.getString("role");
             SessionManager sessionManager = new SessionManager(requireContext());

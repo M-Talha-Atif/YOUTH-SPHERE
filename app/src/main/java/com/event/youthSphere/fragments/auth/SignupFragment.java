@@ -39,8 +39,6 @@ public class SignupFragment extends Fragment {
     private EditText confirmPasswordEditText;
     private Spinner roleSpinner;
     private Button signupButton;
-//    private View loadingOverlay;
-//    private ProgressBar loadingProgressBar;
 
     private static final String[] ROLES = {
             "Participant", "Parent", "Instructor", "Coordinator", "Super Admin"
@@ -91,8 +89,6 @@ public class SignupFragment extends Fragment {
         confirmPasswordEditText = view.findViewById(R.id.confirmPasswordEditText);
         roleSpinner = view.findViewById(R.id.roleSpinner);
         signupButton = view.findViewById(R.id.signupButton);
-//        loadingOverlay = view.findViewById(R.id.loadingOverlay);
-//        loadingProgressBar = view.findViewById(R.id.loadingProgressBar);
     }
 
 
@@ -132,18 +128,15 @@ public class SignupFragment extends Fragment {
             return;
         }
 
-//        showLoading(true);
 
         UserRole role = UserRole.valueOf(selectedRole.toUpperCase().replace(" ", "_"));
 
         firebaseAuthHelper.signup(email, pass, fullName, role)
                 .addOnSuccessListener(task -> {
-//                    showLoading(false);
                     Toast.makeText(requireContext(), "Signup successful", Toast.LENGTH_SHORT).show();
-                    // Optionally navigate to another screen
+
                 })
                 .addOnFailureListener(e -> {
-//                    showLoading(false);
                     Toast.makeText(requireContext(), "Signup failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
