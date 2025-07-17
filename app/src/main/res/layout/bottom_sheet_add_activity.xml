@@ -15,49 +15,44 @@
             android:id="@+id/etName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Activity Name"
-            />
+            android:hint="@string/activity_name" />
 
         <Spinner
             android:id="@+id/spinnerDomain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            />
+            android:layout_marginTop="8dp" />
 
         <EditText
             android:id="@+id/etMinAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Minimum Age"
+            android:hint="@string/minimum_age"
             android:inputType="number"
-            android:layout_marginBottom="8dp"
-           />
+            android:layout_marginBottom="8dp" />
 
         <EditText
             android:id="@+id/etMaxAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Maximum Age"
+            android:hint="@string/maximum_age"
             android:inputType="number"
-            android:layout_marginBottom="8dp"
-            />
+            android:layout_marginBottom="8dp" />
 
         <EditText
             android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
+            android:hint="@string/description"
             android:inputType="textMultiLine"
             android:minLines="3"
-            android:layout_marginBottom="8dp"
-        />
+            android:layout_marginBottom="8dp" />
 
         <EditText
             android:id="@+id/etStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Start Date"
+            android:hint="@string/start_date"
             android:focusable="false"
             android:clickable="true"
             android:inputType="none"
@@ -67,23 +62,21 @@
             android:id="@+id/etEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="End Date"
+            android:hint="@string/end_date"
             android:focusable="false"
             android:clickable="true"
             android:inputType="none"
             android:layout_marginBottom="8dp" />
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Days"
+            android:text="@string/select_days"
             android:textStyle="bold"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:textSize="16sp" />
 
-        <!-- Days checkboxes -->
         <LinearLayout
             android:id="@+id/daysCheckboxContainer"
             android:layout_width="match_parent"
@@ -95,49 +88,49 @@
                 android:id="@+id/cbMonday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="MONDAY"
+                android:text="@string/monday"
                 android:layout_marginBottom="4dp" />
 
             <CheckBox
                 android:id="@+id/cbTuesday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TUESDAY"
+                android:text="@string/tuesday"
                 android:layout_marginBottom="4dp" />
 
             <CheckBox
                 android:id="@+id/cbWednesday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="WEDNESDAY"
+                android:text="@string/wednesday"
                 android:layout_marginBottom="4dp" />
 
             <CheckBox
                 android:id="@+id/cbThursday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="THURSDAY"
+                android:text="@string/thursday"
                 android:layout_marginBottom="4dp" />
 
             <CheckBox
                 android:id="@+id/cbFriday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="FRIDAY"
+                android:text="@string/friday"
                 android:layout_marginBottom="4dp" />
 
             <CheckBox
                 android:id="@+id/cbSaturday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SATURDAY"
+                android:text="@string/saturday"
                 android:layout_marginBottom="4dp" />
 
             <CheckBox
                 android:id="@+id/cbSunday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SUNDAY"
+                android:text="@string/sunday"
                 android:layout_marginBottom="4dp" />
 
         </LinearLayout>
@@ -146,16 +139,15 @@
             android:id="@+id/etMaxParticipants"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Max Participants"
+            android:hint="@string/max_participants"
             android:inputType="number"
-            android:layout_marginBottom="16dp"
-           />
+            android:layout_marginBottom="16dp" />
 
         <Button
             android:id="@+id/btnAddActivity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create Activity"
+            android:text="@string/create_activity"
             android:layout_marginTop="8dp" />
     </LinearLayout>
 </ScrollView>

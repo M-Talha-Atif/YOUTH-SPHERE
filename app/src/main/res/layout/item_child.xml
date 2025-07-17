@@ -10,7 +10,7 @@
         android:id="@+id/tvChildName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Child Name"
+        android:text="@string/child_name"
         android:textStyle="bold"
         android:textSize="16sp" />
 
@@ -18,13 +18,13 @@
         android:id="@+id/tvChildEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email"
+        android:text="@string/email"
         android:textSize="14sp" />
 
     <Button
         android:id="@+id/btnGiveFeedback"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Give Feedback" />
+        android:text="@string/give_feedback" />
 
 </LinearLayout>

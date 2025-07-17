@@ -57,4 +57,66 @@
     <string name="no_description">No description</string>
     <string name="not_assigned">Not Assigned</string>
 
+    <string name="minimum_age">Minimum Age</string>
+    <string name="maximum_age">Maximum Age</string>
+    <string name="description">Description</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="select_days">Select Days</string>
+    <string name="monday">MONDAY</string>
+    <string name="tuesday">TUESDAY</string>
+    <string name="wednesday">WEDNESDAY</string>
+    <string name="thursday">THURSDAY</string>
+    <string name="friday">FRIDAY</string>
+    <string name="saturday">SATURDAY</string>
+    <string name="sunday">SUNDAY</string>
+    <string name="create_activity">Create Activity</string>
+    <string name="update_activity">Update Activity</string>
+
+    <string name="save">Save</string>
+
+    <string name="instructor_comment_label">Instructor's Comment:</string>
+    <string name="instructor_rating_label">Instructor's Rating:</string>
+    <string name="your_comment_hint">Your Comment</string>
+    <string name="enter_rating_hint">Enter rating (1-10)</string>
+    <string name="submit_feedback">Submit Feedback</string>
+
+
+    <string name="stats">Stats</string>
+    <string name="update_status">Update Status</string>
+    <string name="select_participant">Select Participant</string>
+    <string name="enter_feedback">Enter feedback</string>
+    <string name="enter_rating_1_10">Enter rating (1-10)</string>
+    <string name="search_by_name">Search by Name</string>
+    <string name="end_date_dd_mm_yyyy">End Date (dd/MM/yyyy)</string>
+    <string name="start_date_dd_mm_yyyy">Start Date (dd/MM/yyyy)</string>
+    <string name="search_by_name_or_domain_or_description">Search by name or domain or description</string>
+    <string name="add_child">Add Child</string>
+    <string name="confirm_add">Confirm Add</string>
+    <string name="name">Name</string>
+    <string name="activities_attended">Activities Attended: --</string>
+    <string name="avg_feedback_score">Avg Feedback Score: --</string>
+    <string name="domain_distribution">Domain Distribution:</string>
+    <string name="prev">Prev</string>
+    <string name="month_yyyy">Month YYYY</string>
+    <string name="next">Next</string>
+    <string name="uploaded_12_july">Uploaded: 12 July</string>
+    <string name="domain_tech">Domain: Tech</string>
+    <string name="activity_a2">Activity: A2</string>
+    <string name="child_name">Child Name</string>
+    <string name="give_feedback">Give Feedback</string>
+    <string name="activity_name_here">Activity Name here</string>
+    <string name="domain_of_actiivty">Domain of actiivty</string>
+    <string name="age_range">Age Range</string>
+    <string name="participants">Participants</string>
+    <string name="days">Days</string>
+    <string name="month">Month</string>
+    <string name="description_will_be_shown_here">Description will be shown here.</string>
+    <string name="upload_photo">Upload Photo</string>
+    <string name="view_photos">View Photos</string>
+    <string name="enroll">Enroll</string>
+    <string name="instructor_name">Instructor Name</string>
+    <string name="field_specialization">Field Specialization</string>
+    <string name="choose_image">Choose Image</string>
+    <string name="upload">Upload</string>
 </resources>

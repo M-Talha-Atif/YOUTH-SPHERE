@@ -9,7 +9,7 @@
         android:id="@+id/etInstructorName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Full Name"
+        android:hint="@string/full_name"
         android:inputType="textPersonName"/>
 
     <Spinner
@@ -25,12 +25,12 @@
         android:layout_marginTop="12dp"
         android:focusable="false"
         android:clickable="true"
-        android:hint="Employment Start Date"/>
+        android:hint="@string/employment_start_date" />
 
     <Button
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Save"/>
+        android:text="@string/save" />
 </LinearLayout>

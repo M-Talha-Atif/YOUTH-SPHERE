@@ -9,7 +9,7 @@
         android:id="@+id/tvDialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload Image"
+        android:text="@string/upload_photo"
         android:textStyle="bold"
         android:textSize="18sp"
         android:layout_gravity="center" />
@@ -26,13 +26,13 @@
         android:id="@+id/btnChooseImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose Image"
+        android:text="@string/choose_image"
         android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/btnUploadImage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload"
+        android:text="@string/upload"
         android:layout_marginTop="12dp"/>
 </LinearLayout>

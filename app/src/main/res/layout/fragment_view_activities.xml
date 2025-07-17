@@ -9,7 +9,7 @@
         android:id="@+id/etSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search by name or domain or description"
+        android:hint="@string/search_by_name_or_domain_or_description"
         android:drawableLeft="@android:drawable/ic_menu_search"
         android:padding="10dp"
         android:layout_marginBottom="8dp"
@@ -26,7 +26,7 @@
         android:id="@+id/etStartDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Start Date (dd/MM/yyyy)"
+        android:hint="@string/start_date_dd_mm_yyyy"
         android:focusable="false"
         android:clickable="true"
         android:inputType="none"
@@ -37,7 +37,7 @@
         android:id="@+id/etEndDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="End Date (dd/MM/yyyy)"
+        android:hint="@string/end_date_dd_mm_yyyy"
         android:focusable="false"
         android:clickable="true"
         android:inputType="none"
@@ -62,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="Min Age"
+            android:hint="@string/min_age"
             android:inputType="number" />
 
         <EditText
@@ -70,7 +70,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="Max Age"
+            android:hint="@string/max_age"
             android:inputType="number"
             android:layout_marginStart="8dp" />
     </LinearLayout>
@@ -79,7 +79,7 @@
         android:id="@+id/etMaxParticipants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Max Participants"
+        android:hint="@string/max_participants"
         android:inputType="number"
         android:layout_marginHorizontal="8dp" />
 

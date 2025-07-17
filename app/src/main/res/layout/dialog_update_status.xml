@@ -8,11 +8,9 @@
         android:id="@+id/tvStats"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stats"
+        android:text="@string/stats"
         android:textSize="16sp"
         android:textStyle="bold" />
-
-
 
     <Spinner
         android:id="@+id/spinnerStatus"
@@ -24,7 +22,7 @@
         android:id="@+id/btnSubmitStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Status"
+        android:text="@string/update_status"
         android:layout_marginTop="16dp" />
 
     <ScrollView

@@ -19,7 +19,7 @@
         android:id="@+id/tvUploadDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Uploaded: 12 July"
+        android:text="@string/uploaded_12_july"
         android:textSize="14sp"
         android:layout_marginTop="8dp" />
 
@@ -27,14 +27,14 @@
         android:id="@+id/tvDomain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Domain: Tech"
+        android:text="@string/domain_tech"
         android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tvActivityName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Activity: ML Bootcamp"
+        android:text="@string/activity_a2"
         android:textSize="14sp"
         android:textStyle="bold" />
 </LinearLayout>

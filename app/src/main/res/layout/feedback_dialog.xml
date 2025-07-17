@@ -9,7 +9,7 @@
         android:id="@+id/tvParticipant"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select Participant"
+        android:text="@string/select_participant"
         android:textStyle="bold" />
 
     <Spinner
@@ -20,14 +20,14 @@
 
     <EditText
         android:id="@+id/etFeedbackComment"
-        android:hint="Enter feedback"
+        android:hint="@string/enter_feedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textMultiLine" />
 
     <EditText
         android:id="@+id/etFeedbackRating"
-        android:hint="Enter rating (1-10)"
+        android:hint="@string/enter_rating_1_10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
@@ -38,5 +38,5 @@
         android:id="@+id/btnSubmitFeedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Submit" />
+        android:text="@string/submit" />
 </LinearLayout>

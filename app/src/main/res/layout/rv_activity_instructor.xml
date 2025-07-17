@@ -10,7 +10,7 @@
         android:id="@+id/tvActivityName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Activity Name"
+        android:text="@string/activity_name"
         android:textStyle="bold"
         android:textSize="18sp" />
 
@@ -18,7 +18,7 @@
         android:id="@+id/tvDomain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Domain: Tech" />
+        android:text="@string/domain_tech" />
 
     <TextView
         android:id="@+id/tvMonth"
@@ -37,7 +37,7 @@
             android:id="@+id/btnFeedback"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Give Feedback"
+            android:text="@string/give_feedback"
             android:layout_marginStart="8dp" />
 
 
@@ -55,13 +55,13 @@
                 android:id="@+id/btnUploadPhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload Photo" />
+                android:text="@string/upload_photo" />
 
             <Button
                 android:id="@+id/btnViewPhotos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View Photos"
+                android:text="@string/view_photos"
                 android:layout_marginStart="8dp" />
 
 

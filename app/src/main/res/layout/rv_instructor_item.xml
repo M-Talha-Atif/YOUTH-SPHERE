@@ -12,7 +12,7 @@
         android:id="@+id/tvInstructorName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Instructor Name"
+        android:text="@string/instructor_name"
         android:textStyle="bold"
         android:textSize="16sp" />
 
@@ -20,21 +20,21 @@
         android:id="@+id/tvInstructorEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email"
+        android:text="@string/email"
         android:textColor="#666666" />
 
     <TextView
         android:id="@+id/tvFieldSpecialization"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Field Specialization"
+        android:text="@string/field_specialization"
         android:textColor="#666666" />
 
     <TextView
         android:id="@+id/tvEmploymentDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Employment Date"
+        android:text="@string/employment_start_date"
         android:textColor="#666666" />
 
     <LinearLayout

@@ -11,7 +11,7 @@
         android:id="@+id/tvActivityName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Activity Name"
+        android:text="@string/activity_name"
         android:textStyle="bold"
         android:textSize="16sp" />
 
@@ -19,36 +19,36 @@
         android:id="@+id/tvDomain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Domain"
+        android:text="@string/domain_tech"
         android:textColor="#666666" />
 
     <TextView
         android:id="@+id/tvAgeRange"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Age Range"
+        android:text="@string/age_range"
         android:textColor="#666666" />
-
     <TextView
         android:id="@+id/tvParticipants"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Participants"
+        android:text="@string/participants"
         android:textColor="#666666" />
 
     <TextView
         android:id="@+id/tvDays"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Days"
+        android:text="@string/days"
         android:textColor="#666666" />
 
     <TextView
         android:id="@+id/tvMonth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Month"
+        android:text="@string/month"
         android:textColor="#666666" />
+
 
     <ImageView
         android:id="@+id/btnToggleDesc"
@@ -65,13 +65,13 @@
         android:visibility="gone"
         android:textColor="#444"
         android:layout_marginTop="4dp"
-        android:text="Description will be shown here." />
+        android:text="@string/description_will_be_shown_here" />
 
     <Button
         android:id="@+id/btnViewPhotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Photos"
+        android:text="@string/view_photos"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"/>
 </LinearLayout>
