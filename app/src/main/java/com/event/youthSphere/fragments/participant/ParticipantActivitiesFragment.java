@@ -20,11 +20,13 @@ import com.event.youthSphere.firebase.FirebaseEnrollmentHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.participant.EnrollmentModel;
 import com.event.youthSphere.models.users.InstructorUser;
+import com.event.youthSphere.models.users.ParticipantUser;
 import com.event.youthSphere.utils.SimpleSpinnerListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.*;
 
@@ -49,6 +51,9 @@ public class ParticipantActivitiesFragment extends Fragment {
 
     Spinner spinnerDayFilter;
 
+    private ParticipantUser currentUser;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,7 +62,18 @@ public class ParticipantActivitiesFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             currentUserId = user.getUid();
-            loadUserEnrollments();
+
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(currentUserId)
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
+                        if (snapshot.exists()) {
+                            currentUser = snapshot.toObject(ParticipantUser.class);
+                            loadUserEnrollments(); // only after currentUser is loaded
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to load user", Toast.LENGTH_SHORT).show());
         }
 
         initViews();
@@ -244,19 +260,16 @@ public class ParticipantActivitiesFragment extends Fragment {
 
                         });
                     } else {
-                        FirebaseEnrollmentHelper.enrollUser(currentUserId, activityModel.getId(), enrollTask -> {
-                            if (enrollTask.isSuccessful()) {
-
+                        FirebaseEnrollmentHelper.enrollUser(activityModel.getId(), currentUser, (success, exception) -> {
+                            if (success) {
                                 enrolledIds.add(activityModel.getId());
                                 adapter.setEnrolledActivityIds(new HashSet<>(enrolledIds));
-                            }
-
-                            else {
-                                Exception e = enrollTask.getException();
-                                String msg = e != null ? e.getMessage() : "Enrollment failed";
+                            } else {
+                                String msg = (exception != null) ? exception.getMessage() : "Enrollment failed";
                                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                             }
                         });
+
                     }
                 });
             }

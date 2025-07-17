@@ -86,8 +86,9 @@ public class ParticipantProgressFragment extends Fragment {
 
             validDays.clear();
             for (ActivityModel activity : activities) {
-                List<String> daysOfActvity = activity.getDays();
-                validDays.addAll(daysOfActvity);
+                if (activity.getStartDate() != null && activity.getStartDate().after(new Date())) { continue; }
+                List<String> daysOfActivity = activity.getDays();
+                validDays.addAll(daysOfActivity);
             }
 
             Log.d("ParticipantProgressFragment", "Valid Days: " + validDays);

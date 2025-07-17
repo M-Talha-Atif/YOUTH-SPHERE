@@ -160,46 +160,54 @@ public class FirebaseActivityHelper {
                 return;
             }
 
-            List<ActivityModel> activityList = new ArrayList<>();
-            Map<String, ActivityModel> activityMap = new HashMap<>();
+            Map<String, ActivityModel> validActivityMap = new HashMap<>();
+            Date now = new Date();
 
             for (QueryDocumentSnapshot doc : activitySnapshot) {
                 ActivityModel model = doc.toObject(ActivityModel.class);
-                activityList.add(model);
-                activityMap.put(model.getId(), model);
+                if (model.getStartDate() != null && model.getStartDate().before(now)) {
+                    validActivityMap.put(model.getId(), model);
+                }
             }
 
-            db.collection("feedbacks").get().addOnSuccessListener(feedbackSnapshot -> {
+            db.collection("feedback").get().addOnSuccessListener(feedbackSnapshot -> {
                 Map<String, List<Integer>> feedbackScores = new HashMap<>();
 
                 for (QueryDocumentSnapshot doc : feedbackSnapshot) {
                     String activityId = doc.getString("activityId");
                     Long rating = doc.getLong("rating");
-                    if (activityId != null && rating != null) {
+                    if (activityId != null && rating != null && validActivityMap.containsKey(activityId)) {
                         feedbackScores.putIfAbsent(activityId, new ArrayList<>());
                         feedbackScores.get(activityId).add(rating.intValue());
                     }
                 }
 
-                List<ActivityModel> sortedList = new ArrayList<>(activityList);
-                sortedList.sort((a1, a2) -> {
+                List<ActivityModel> filteredList = new ArrayList<>();
+                for (Map.Entry<String, ActivityModel> entry : validActivityMap.entrySet()) {
+                    double avg = computeScore(entry.getValue(), feedbackScores);
+                    Log.d("ActivityScore", "Activity: " + entry.getValue().getName() + " Score: " + avg);
+                    if (avg > 7) {
+                        filteredList.add(entry.getValue());
+                    }
+                }
+
+                filteredList.sort((a1, a2) -> {
                     double score1 = computeScore(a1, feedbackScores);
                     double score2 = computeScore(a2, feedbackScores);
-                    return Double.compare(score2, score1); // Descending
+                    return Double.compare(score2, score1); // descending
                 });
 
-                callback.onResult(sortedList.subList(0, Math.min(10, sortedList.size())));
+                callback.onResult(filteredList.subList(0, Math.min(10, filteredList.size())));
             });
         });
     }
 
     private static double computeScore(ActivityModel activity, Map<String, List<Integer>> feedbackMap) {
         List<Integer> ratings = feedbackMap.get(activity.getId());
-        // in case rating null then sort by registered participants count otherwise both will contribute
-        if (ratings == null || ratings.isEmpty()) return activity.getRegisteredCount();
-        double avgRating = ratings.stream().mapToInt(i -> i).average().orElse(0);
-        return avgRating * activity.getRegisteredCount();
+        if (ratings == null || ratings.isEmpty()) return 0;
+        return ratings.stream().mapToInt(i -> i).average().orElse(0);
     }
+
 
 
 }

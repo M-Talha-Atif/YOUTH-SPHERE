@@ -12,6 +12,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class FirebaseParticipantHelper {
                         AtomicInteger totalScore = new AtomicInteger(0);
                         AtomicInteger scoreCount = new AtomicInteger(0);
                         AtomicInteger loaded = new AtomicInteger(0);
+                        AtomicInteger validActivities = new AtomicInteger(0);
 
                         int total = enrollments.size();
 
@@ -58,6 +60,17 @@ public class FirebaseParticipantHelper {
                                         String domain = activityDoc.getString("domain");
                                         if (domain == null) domain = "Unknown";
 
+                                        Date startDate = activityDoc.getDate("startDate");
+                                        if (startDate != null && startDate.after(new Date())) {
+                                            // Future activity — skip
+                                            if (loaded.incrementAndGet() == total) {
+                                                finalizeProgressData(callback, domainCount, domainRatings, totalScore, scoreCount, validActivities.get());
+                                            }
+                                            return;
+                                        }
+
+                                        // Only include activity if it’s ongoing or past
+                                        validActivities.incrementAndGet();
                                         domainCount.put(domain, domainCount.getOrDefault(domain, 0) + 1);
 
                                         for (FeedbackModel f : feedbackList) {
@@ -71,12 +84,12 @@ public class FirebaseParticipantHelper {
                                         }
 
                                         if (loaded.incrementAndGet() == total) {
-                                            ParticipantProgressData data = new ParticipantProgressData();
-                                            data.setTotalActivities(total);
-                                            data.setAverageScore(scoreCount.get() == 0 ? 0 : totalScore.get() / (float) scoreCount.get());
-                                            data.setDomainParticipation(domainCount);
-                                            data.setDomainAvgScores(domainRatings);
-                                            callback.accept(data, null);
+                                            finalizeProgressData(callback, domainCount, domainRatings, totalScore, scoreCount, validActivities.get());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        if (loaded.incrementAndGet() == total) {
+                                            finalizeProgressData(callback, domainCount, domainRatings, totalScore, scoreCount, validActivities.get());
                                         }
                                     });
                         }
@@ -84,6 +97,24 @@ public class FirebaseParticipantHelper {
                     .addOnFailureListener(e -> callback.accept(null, e));
         });
     }
+
+    private static void finalizeProgressData(
+            BiConsumer<ParticipantProgressData, Exception> callback,
+            Map<String, Integer> domainCount,
+            Map<String, List<Integer>> domainRatings,
+            AtomicInteger totalScore,
+            AtomicInteger scoreCount,
+            int validTotal
+    ) {
+        ParticipantProgressData data = new ParticipantProgressData();
+        data.setTotalActivities(validTotal);
+        data.setAverageScore(scoreCount.get() == 0 ? 0 : totalScore.get() / (float) scoreCount.get());
+        data.setDomainParticipation(domainCount);
+        data.setDomainAvgScores(domainRatings);
+        callback.accept(data, null);
+    }
+
+
 
     public static void getRegisteredActivities(String participantId, BiConsumer<List<ActivityModel>, Exception> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

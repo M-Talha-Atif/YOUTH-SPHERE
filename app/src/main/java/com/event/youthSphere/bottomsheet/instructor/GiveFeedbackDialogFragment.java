@@ -53,8 +53,17 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, names);
         spinner.setAdapter(adapter);
+        long now = System.currentTimeMillis();
+        boolean validWindow = now >= activity.getStartDate().getTime() && now <= activity.getEndDate().getTime();
+        btnSubmit.setEnabled(validWindow);
 
         btnSubmit.setOnClickListener(v -> {
+            // Block if current time is not within activity window
+            if (now < activity.getStartDate().getTime() || now > activity.getEndDate().getTime()) {
+                Toast.makeText(getContext(), "Feedback allowed only during activity period.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             int pos = spinner.getSelectedItemPosition();
             User selected = participants.get(pos);
             int rating = Integer.parseInt(etRating.getText().toString());

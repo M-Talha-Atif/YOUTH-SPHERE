@@ -185,17 +185,14 @@ public class DashboardActivity extends AppCompatActivity {
                 case COORDINATOR:
                     menu.add(Menu.NONE, ID_MENU_MANAGE_ACTIVITIES, Menu.NONE, "Manage Activities");
                     menu.add(Menu.NONE, ID_MENU_INSTRUCTORS, Menu.NONE, "Instructors");
-                    menu.add(Menu.NONE, ID_MENU_TOP_ACTIVITIES, Menu.NONE, "Top Activities");
                     break;
                 case PARTICIPANT:
                     menu.add(Menu.NONE, ID_MENU_PARTICIPANT_ACTIVITIES, Menu.NONE, "Activities");
-                    menu.add(Menu.NONE, ID_MENU_MY_CALENDAR, Menu.NONE, "My Calendar");
                     menu.add(Menu.NONE, ID_MENU_PROGRESS, Menu.NONE, "Progress");
                     break;
                 case INSTRUCTOR:
                     menu.add(Menu.NONE, ID_MENU_INSTRUCTOR_ACTIVITIES, Menu.NONE, "Activities");
                     menu.add(Menu.NONE, ID_MENU_ASSIGNED_ACTIVITIES, Menu.NONE, "Assigned");
-                    menu.add(Menu.NONE, ID_MENU_UPLOAD_PHOTOS, Menu.NONE, "Upload Photos");
                     break;
                 case PARENT:
                     menu.add(Menu.NONE, ID_MENU_PARENT_ACTIVITIES, Menu.NONE, "Activities");
@@ -204,8 +201,6 @@ public class DashboardActivity extends AppCompatActivity {
                     break;
                 case SUPER_ADMIN:
                     menu.add(Menu.NONE, ID_MENU_SUPER_ACTIVITIES, Menu.NONE, "Activities");
-                    menu.add(Menu.NONE, ID_MENU_USERS, Menu.NONE, "Users");
-                    menu.add(Menu.NONE, ID_MENU_REVIEWS, Menu.NONE, "Reviews");
                     break;
             }
         }
@@ -236,20 +231,13 @@ public class DashboardActivity extends AppCompatActivity {
             case ID_MENU_INSTRUCTORS:
                 loadFragment(new ManageInstructorsFragment());
                 return true;
-            case ID_MENU_TOP_ACTIVITIES:
-                showToast("Top Activities - Fragment not implemented yet");
-                return true;
 
             // Participant
             case ID_MENU_PARTICIPANT_ACTIVITIES:
                 loadFragment(new ParticipantActivitiesFragment());
                 return true;
-            case ID_MENU_MY_CALENDAR:
-                showToast("My Calendar - Fragment not implemented yet");
-                return true;
             case ID_MENU_PROGRESS:
                 loadFragment(new ParticipantProgressFragment());
-                showToast("Progress - Fragment not implemented yet");
                 return true;
 
             // Instructor
@@ -259,9 +247,6 @@ public class DashboardActivity extends AppCompatActivity {
             case ID_MENU_ASSIGNED_ACTIVITIES:
                 loadFragment(new InstructorActivitiesFragment());
                 return true;
-            case ID_MENU_UPLOAD_PHOTOS:
-                showToast("Upload Photos - Fragment not implemented yet");
-                return true;
 
             // Parent
             case ID_MENU_PARENT_ACTIVITIES:
@@ -269,7 +254,6 @@ public class DashboardActivity extends AppCompatActivity {
                 return true;
             case ID_MENU_FEEDBACK:
                 loadFragment(new ManageChildrenFragment());
-//                showToast("Feedback - Fragment not implemented yet");
                 return true;
             case ID_MENU_PHOTOS:
                 loadFragment(new AllActivityPhotosFragment());
@@ -278,12 +262,6 @@ public class DashboardActivity extends AppCompatActivity {
             // Super Admin
             case ID_MENU_SUPER_ACTIVITIES:
                 loadFragment(new SuperAdminActivitiesFragment());
-                return true;
-            case ID_MENU_USERS:
-                showToast("Users - Fragment not implemented yet");
-                return true;
-            case ID_MENU_REVIEWS:
-                showToast("Reviews - Fragment not implemented yet");
                 return true;
         }
 

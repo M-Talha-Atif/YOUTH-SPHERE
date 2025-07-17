@@ -160,12 +160,6 @@ public class SuperAdminActivitiesFragment extends Fragment {
 
 
 
-//        adapter.setOnFeedbackClickListener(activity -> {
-//          // open the bottom sheet to give feedback to activity
-//            // bottom sheet having spinner to give feedback
-//            // if no review to activity then disable give feedback button
-//        });
-
 
         if (isSafe()) {
 

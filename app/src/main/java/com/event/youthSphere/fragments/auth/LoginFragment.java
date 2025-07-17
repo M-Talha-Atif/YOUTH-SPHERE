@@ -104,14 +104,8 @@ public class LoginFragment extends Fragment {
     }
 
     private void showError(String message) {
-//        showLoading(false);
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
-
-//    private void showLoading(boolean show) {
-//        loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
-//        loadingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-//    }
 
     private void navigateToDashboard(String role) {
         Intent intent = new Intent(getContext(), DashboardActivity.class);

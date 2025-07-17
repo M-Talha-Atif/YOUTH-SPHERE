@@ -56,8 +56,20 @@ public class UploadPhotoDialogFragment extends DialogFragment {
         Button btnUpload = view.findViewById(R.id.btnUploadImage);
 
         btnChoose.setOnClickListener(v -> openCamera());
+        long now = System.currentTimeMillis();
+        boolean validWindow = now >= activity.getStartDate().getTime() && now <= activity.getEndDate().getTime();
+        btnUpload.setEnabled(validWindow);
+
 
         btnUpload.setOnClickListener(v -> {
+            // Block if current time is not within activity window
+
+            if (now < activity.getStartDate().getTime() || now > activity.getEndDate().getTime()) {
+                Toast.makeText(getContext(), "Photo upload is allowed only during activity period.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+
             if (base64Image != null && activity != null) {
                 FirebaseInstructorHelper.uploadActivityImage(
                         activity.getId(),

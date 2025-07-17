@@ -66,6 +66,7 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
 
         btnSubmit = view.findViewById(R.id.btnSubmitFeedback);
 
+
         FirebaseEnrollmentHelper.getUserEnrollments(child.getUid(), task -> {
             enrollments = task.getResult();
 
@@ -103,32 +104,43 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
 
                 EnrollmentModel selected = (EnrollmentModel) selectedItem;
 
-                FirebaseFirestore.getInstance().collection("feedback")
-                        .whereEqualTo("participantId", child.getUid())
-                        .whereEqualTo("activityId", selected.getActivityId())
-                        .get()
-                        .addOnSuccessListener(snapshot -> {
-                            boolean hasInstructor = false;
-                            String instructorComment = "", instructorRating = "";
-
-                            for (DocumentSnapshot doc : snapshot) {
-                                FeedbackModel fb = doc.toObject(FeedbackModel.class);
-                                if (fb.getInstructorId() != null && fb.getParentId() == null) {
-                                    hasInstructor = true;
-                                    instructorComment = fb.getComment();
-                                    instructorRating = String.valueOf(fb.getRating());
-                                }
-                            }
-
-                            if (hasInstructor) {
-                                instructorCommentView.setText(instructorComment);
-                                instructorRatingView.setText(instructorRating);
-                                btnSubmit.setEnabled(true);
-                            } else {
-                                instructorCommentView.setText("No feedback from instructor yet.");
-                                instructorRatingView.setText("-");
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("activities").document(selected.getActivityId()).get()
+                        .addOnSuccessListener(activityDoc -> {
+                            ActivityModel activity = activityDoc.toObject(ActivityModel.class);
+                            if (activity == null) {
                                 btnSubmit.setEnabled(false);
+                                return;
                             }
+
+                            long now = System.currentTimeMillis();
+                            long start = activity.getStartDate().getTime();
+                            long end = activity.getEndDate().getTime();
+
+                            // Allow only if current time is between start and end
+                            boolean inFeedbackWindow = now >= start && now <= end;
+
+                            db.collection("feedback")
+                                    .whereEqualTo("participantId", child.getUid())
+                                    .whereEqualTo("activityId", selected.getActivityId())
+                                    .get()
+                                    .addOnSuccessListener(snapshot -> {
+                                        boolean hasInstructor = false;
+                                        String instructorComment = "", instructorRating = "";
+
+                                        for (DocumentSnapshot doc : snapshot) {
+                                            FeedbackModel fb = doc.toObject(FeedbackModel.class);
+                                            if (fb.getInstructorId() != null && fb.getParentId() == null) {
+                                                hasInstructor = true;
+                                                instructorComment = fb.getComment();
+                                                instructorRating = String.valueOf(fb.getRating());
+                                            }
+                                        }
+
+                                        instructorCommentView.setText(hasInstructor ? instructorComment : "No feedback from instructor yet.");
+                                        instructorRatingView.setText(hasInstructor ? instructorRating : "-");
+                                        btnSubmit.setEnabled(hasInstructor && inFeedbackWindow);
+                                    });
                         });
             }
 
@@ -138,6 +150,8 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
 
         btnSubmit.setOnClickListener(v -> {
 
+
+
             Object selectedItem = activitySpinner.getSelectedItem();
             if (!(selectedItem instanceof EnrollmentModel)) {
                 instructorCommentView.setText("N/A");
@@ -145,6 +159,8 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
                 btnSubmit.setEnabled(false);
                 return;
             }
+
+
             EnrollmentModel selected = (EnrollmentModel) selectedItem;
 
 
@@ -184,6 +200,8 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
                         dismiss();
                     });
         });
+
+
 
         return view;
     }
