@@ -82,7 +82,6 @@
         android:paddingBottom="4dp">
     </LinearLayout>
 
-    <!-- Calendar grid -->
     <GridLayout
         android:id="@+id/calendarGrid"
         android:layout_width="match_parent"

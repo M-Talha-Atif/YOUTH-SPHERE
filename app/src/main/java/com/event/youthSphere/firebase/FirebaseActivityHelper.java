@@ -1,6 +1,10 @@
 package com.event.youthSphere.firebase;
 
 
+import android.content.Context;
+import android.util.Log;
+
+import com.event.youthSphere.local.ActivityDBHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.*;
@@ -32,9 +36,36 @@ public class FirebaseActivityHelper {
     }
 
     // Get all activities
-    public static void getAllActivities(EventListener<QuerySnapshot> listener) {
-        activityRef.orderBy("registeredCount", Query.Direction.DESCENDING).addSnapshotListener(listener);
+    public static void getAllActivities(Context context, OnActivitiesResult callback) {
+        FirebaseFirestore.getInstance().collection("activities")
+                .orderBy("registeredCount", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<ActivityModel> activityList = new ArrayList<>();
+                    ActivityDBHelper dbHelper = new ActivityDBHelper(context);
+
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        ActivityModel model = doc.toObject(ActivityModel.class);
+                        dbHelper.insertOrUpdate(model); // Sync to SQLite
+                        activityList.add(model);
+                    }
+
+                    callback.onSuccess(activityList);
+                })
+                .addOnFailureListener(e -> {
+                    // 🔌 Offline fallback
+                    Log.d("ActivityHelper", "Offline mode");
+                    ActivityDBHelper dbHelper = new ActivityDBHelper(context);
+                    List<ActivityModel> offlineList = dbHelper.getAllActivities();
+                    callback.onSuccess(offlineList);
+                });
     }
+
+    // Callback interface
+    public interface OnActivitiesResult {
+        void onSuccess(List<ActivityModel> activities);
+    }
+
 
     public static void searchByDomain(String domain, EventListener<QuerySnapshot> listener) {
         activityRef.whereEqualTo("domain", domain).addSnapshotListener(listener);
@@ -88,6 +119,61 @@ public class FirebaseActivityHelper {
 
         batch.commit().addOnCompleteListener(listener);
     }
+
+    public interface TopActivitiesCallback {
+        void onResult(List<ActivityModel> topActivities);
+    }
+
+    public static void getTop10Activities(TopActivitiesCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("activities").get().addOnSuccessListener(activitySnapshot -> {
+            if (activitySnapshot.isEmpty()) {
+                callback.onResult(Collections.emptyList());
+                return;
+            }
+
+            List<ActivityModel> activityList = new ArrayList<>();
+            Map<String, ActivityModel> activityMap = new HashMap<>();
+
+            for (QueryDocumentSnapshot doc : activitySnapshot) {
+                ActivityModel model = doc.toObject(ActivityModel.class);
+                activityList.add(model);
+                activityMap.put(model.getId(), model);
+            }
+
+            db.collection("feedbacks").get().addOnSuccessListener(feedbackSnapshot -> {
+                Map<String, List<Integer>> feedbackScores = new HashMap<>();
+
+                for (QueryDocumentSnapshot doc : feedbackSnapshot) {
+                    String activityId = doc.getString("activityId");
+                    Long rating = doc.getLong("rating");
+                    if (activityId != null && rating != null) {
+                        feedbackScores.putIfAbsent(activityId, new ArrayList<>());
+                        feedbackScores.get(activityId).add(rating.intValue());
+                    }
+                }
+
+                List<ActivityModel> sortedList = new ArrayList<>(activityList);
+                sortedList.sort((a1, a2) -> {
+                    double score1 = computeScore(a1, feedbackScores);
+                    double score2 = computeScore(a2, feedbackScores);
+                    return Double.compare(score2, score1); // Descending
+                });
+
+                callback.onResult(sortedList.subList(0, Math.min(10, sortedList.size())));
+            });
+        });
+    }
+
+    private static double computeScore(ActivityModel activity, Map<String, List<Integer>> feedbackMap) {
+        List<Integer> ratings = feedbackMap.get(activity.getId());
+        // in case rating null then sort by registered participants count otherwise both will contribute
+        if (ratings == null || ratings.isEmpty()) return activity.getRegisteredCount();
+        double avgRating = ratings.stream().mapToInt(i -> i).average().orElse(0);
+        return avgRating * activity.getRegisteredCount();
+    }
+
 
 }
 

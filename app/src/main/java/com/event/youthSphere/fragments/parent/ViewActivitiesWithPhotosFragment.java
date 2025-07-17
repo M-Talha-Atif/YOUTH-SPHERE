@@ -207,14 +207,12 @@ public class ViewActivitiesWithPhotosFragment extends Fragment {
     private void loadActivities() {
         if (!isSafe()) return;
 
-        FirebaseActivityHelper.getAllActivities((value, error) -> {
-            if (!isAdded() || rootView == null || error != null || value == null) return;
+        FirebaseActivityHelper.getAllActivities (requireContext(), activityModels ->
+        {
+            if (!isAdded() || rootView == null || activityModels == null) return;
 
             activityList.clear();
-            for (DocumentChange dc : value.getDocumentChanges()) {
-                ActivityModel activity = dc.getDocument().toObject(ActivityModel.class);
-                activityList.add(activity);
-            }
+            activityList.addAll(activityModels);
 
             if (!isSafe()) return;
 

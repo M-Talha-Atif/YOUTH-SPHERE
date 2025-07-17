@@ -75,8 +75,8 @@
 
     <string name="save">Save</string>
 
-    <string name="instructor_comment_label">Instructor's Comment:</string>
-    <string name="instructor_rating_label">Instructor's Rating:</string>
+    <string name="instructor_comment_label">Instructor Comment:</string>
+    <string name="instructor_rating_label">Instructor rating:</string>
     <string name="your_comment_hint">Your Comment</string>
     <string name="enter_rating_hint">Enter rating (1-10)</string>
     <string name="submit_feedback">Submit Feedback</string>
@@ -90,7 +90,7 @@
     <string name="search_by_name">Search by Name</string>
     <string name="end_date_dd_mm_yyyy">End Date (dd/MM/yyyy)</string>
     <string name="start_date_dd_mm_yyyy">Start Date (dd/MM/yyyy)</string>
-    <string name="search_by_name_or_domain_or_description">Search by name or domain or description</string>
+    <string name="search_here">Search by name or domain or description</string>
     <string name="add_child">Add Child</string>
     <string name="confirm_add">Confirm Add</string>
     <string name="name">Name</string>

@@ -20,7 +20,7 @@
         android:id="@+id/etSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/search_by_name_or_domain_or_description"
+        android:hint="@string/search_here"
         android:drawableLeft="@android:drawable/ic_menu_search"
         android:padding="10dp"
         android:layout_marginBottom="8dp"
@@ -93,6 +93,13 @@
         android:hint="@string/max_participants"
         android:inputType="number"
         android:layout_marginHorizontal="8dp" />
+
+    <Button
+        android:id="@+id/btnTop10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Top 10 Activities"
+        android:layout_marginBottom="8dp" />
 
 
 

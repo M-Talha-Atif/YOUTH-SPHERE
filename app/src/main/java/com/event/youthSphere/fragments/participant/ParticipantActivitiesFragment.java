@@ -77,8 +77,10 @@ public class ParticipantActivitiesFragment extends Fragment {
         etEndDate = rootView.findViewById(R.id.etEndDate);
 
         adapter = new ParticipantActivityAdapter();
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter);
+        if ( isSafe()) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setAdapter(adapter);
+        }
 
         InputFilter[] positiveFilter = new InputFilter[]{
                 (source, start, end, dest, dstart, dend) -> {
@@ -104,29 +106,39 @@ public class ParticipantActivitiesFragment extends Fragment {
         spinnerDayFilter = rootView.findViewById(R.id.spinnerDayFilter);
 
         List<String> dayOptions = Arrays.asList("All Days", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
-        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dayOptions);
-        spinnerDayFilter.setAdapter(dayAdapter);
-        spinnerDayFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+        if ( isSafe()) {
+            ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, dayOptions);
+            spinnerDayFilter.setAdapter(dayAdapter);
+            spinnerDayFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+        }
 
         etEndDate.setFocusable(false);
         etEndDate.setOnClickListener(v -> showDatePicker(etEndDate));
     }
 
+
+
     private void showDatePicker(EditText targetEditText) {
         Calendar calendar = Calendar.getInstance();
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
-                (view, year, month, dayOfMonth) -> {
-                    // Format selected date
-                    String dateString = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
-                    targetEditText.setText(dateString);
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-        );
+        if ( isSafe()) {
 
-        datePickerDialog.show();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        // Format selected date
+                        String dateString = String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                        targetEditText.setText(dateString);
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.show();
+        }
+
+
+
+
     }
 
     private Date parseDateSafe(String str) {
@@ -186,12 +198,16 @@ public class ParticipantActivitiesFragment extends Fragment {
     }
 
     private void loadActivities() {
-        FirebaseActivityHelper.getAllActivities((value, error) -> {
-            if (value != null && isSafe()) {
-                activityList.clear();
-                for (DocumentChange dc : value.getDocumentChanges()) {
-                    activityList.add(dc.getDocument().toObject(ActivityModel.class));
-                }
+        FirebaseActivityHelper.getAllActivities(requireContext(), activityModels ->  {
+
+            if (!isAdded() || rootView == null || activityModels == null) return;
+
+            activityList.clear();
+            activityList.addAll(activityModels);
+
+            if (!isSafe()) return;
+
+            if ( getActivity()!=null && getContext()!=null ){
                 requireActivity().runOnUiThread(this::applyFilters);
             }
         });

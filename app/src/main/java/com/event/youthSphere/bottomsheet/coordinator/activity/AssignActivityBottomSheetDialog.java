@@ -97,23 +97,36 @@ public class AssignActivityBottomSheetDialog extends DialogFragment {
      * </p>
      */
     private void loadActivities() {
-        FirebaseActivityHelper.getAllActivities((snapshots, error) -> {
-            if (error != null || snapshots == null || !isAdded() || getContext() == null) return;
+        FirebaseActivityHelper.getAllActivities(requireContext(), activityList -> {
+            if (!isAdded() || getContext() == null) return;
 
             activities.clear();
             List<String> names = new ArrayList<>();
 
-            for (QueryDocumentSnapshot doc : snapshots) {
-                ActivityModel model = doc.toObject(ActivityModel.class);
-                activities.add(model);
-                names.add(model.getName());
+            for (ActivityModel model : activityList) {
+                if (model.getInstructorId() == null || model.getInstructorId().isEmpty()) {
+                    activities.add(model);
+                    names.add(model.getName());
+                }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, names);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerActivities.setAdapter(adapter);
+            if (activities.isEmpty()) {
+                spinnerActivities.setVisibility(View.GONE);
+                spinnerInstructors.setVisibility(View.GONE);
+                btnAssign.setEnabled(false);
+                Toast.makeText(getContext(), "No unassigned activities available.", Toast.LENGTH_SHORT).show();
+            } else {
+                spinnerActivities.setVisibility(View.VISIBLE);
+                spinnerInstructors.setVisibility(View.VISIBLE);
+                btnAssign.setEnabled(true);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, names);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerActivities.setAdapter(adapter);
+            }
         });
     }
+
 
     /**
      * Loads instructors from Firebase and populates the instructor spinner.
@@ -156,9 +169,15 @@ public class AssignActivityBottomSheetDialog extends DialogFragment {
                         names.add(instructor.getFullName());
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, names);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerInstructors.setAdapter(adapter);
+                    if (isSafe())
+                    {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, names);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerInstructors.setAdapter(adapter);
+
+                    }
+
+
                 });
     }
 
@@ -176,10 +195,13 @@ public class AssignActivityBottomSheetDialog extends DialogFragment {
      */
     private void openDatePicker() {
         Calendar calendar = Calendar.getInstance();
-        DatePickerDialog datePicker = new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
-            tvEmploymentStartDate.setText(String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year));
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        datePicker.show();
+        if (isSafe()) {
+            DatePickerDialog datePicker = new DatePickerDialog(requireContext(), (view, year, month, dayOfMonth) -> {
+                tvEmploymentStartDate.setText(String.format(Locale.getDefault(), "%02d/%02d/%04d", dayOfMonth, month + 1, year));
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+            datePicker.show();
+        }
+
     }
 
     /**
@@ -252,6 +274,10 @@ public class AssignActivityBottomSheetDialog extends DialogFragment {
                     }
                 }
         );
+    }
+
+    private boolean isSafe() {
+        return isAdded() && getContext() != null;
     }
 
 }

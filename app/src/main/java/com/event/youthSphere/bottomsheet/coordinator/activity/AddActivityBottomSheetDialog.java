@@ -89,22 +89,35 @@ public class AddActivityBottomSheetDialog extends DialogFragment {
             etEndDate.setText(new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(endCalendar.getTime()));
         };
 
-        etStartDate.setOnClickListener(v -> {
-            new DatePickerDialog(requireContext(), startDateListener,
-                    startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH))
-                    .show();
-        });
+        if ( isSafe() ) {
 
-        etEndDate.setOnClickListener(v -> {
-            new DatePickerDialog(requireContext(), endDateListener,
-                    endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH))
-                    .show();
-        });
+            etStartDate.setOnClickListener(v -> {
+                new DatePickerDialog(requireContext(), startDateListener,
+                        startCalendar.get(Calendar.YEAR), startCalendar.get(Calendar.MONTH), startCalendar.get(Calendar.DAY_OF_MONTH))
+                        .show();
+            });
+        }
 
 
-        ArrayAdapter<String> domainAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item,
-                Arrays.asList("Science", "Society", "Creativity"));
-        spinnerDomain.setAdapter(domainAdapter);
+
+        if ( isSafe() ) {
+
+
+            etEndDate.setOnClickListener(v -> {
+                new DatePickerDialog(requireContext(), endDateListener,
+                        endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH))
+                        .show();
+            });
+
+        }
+
+
+         if ( isSafe() ) {
+             ArrayAdapter<String> domainAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+                     Arrays.asList("Science", "Society", "Creativity"));
+             spinnerDomain.setAdapter(domainAdapter);
+
+         }
 
         btnAdd.setOnClickListener(v -> {
             String name = etName.getText().toString().trim();
@@ -205,6 +218,10 @@ public class AddActivityBottomSheetDialog extends DialogFragment {
         });
 
         return dialog;
+    }
+
+    private boolean isSafe() {
+        return isAdded() && getContext() != null;
     }
 
 
