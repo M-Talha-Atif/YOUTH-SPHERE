@@ -111,18 +111,16 @@ public class ManageActivitiesFragment extends Fragment {
         instructorNames.add("All Instructors");
         uniqueInstructorNamesSet.add("All Instructors");
 
-        FirebaseActivityHelper.fetchAllInstructors((snapshots, error) -> {
-            if (error != null || snapshots == null) return;
+        FirebaseActivityHelper.fetchAllInstructors(getContext(), (instructors) -> {
+            if (instructors == null || instructors.isEmpty()) return;
 
-            for (DocumentSnapshot doc : snapshots.getDocuments()) {
-                InstructorUser instructor = doc.toObject(InstructorUser.class);
-                if (instructor != null) {
-                    String name = instructor.getFullName();
-                    String id = doc.getId();
-                    if (name != null && uniqueInstructorNamesSet.add(name)) {
-                        instructorNames.add(name);
-                        instructorNameToId.put(name, id);
-                    }
+            for (InstructorUser instructor : instructors) {
+                String name = instructor.getFullName();
+                String id = instructor.getUid();
+
+                if (name != null && uniqueInstructorNamesSet.add(name)) {
+                    instructorNames.add(name);
+                    instructorNameToId.put(name, id);
                 }
             }
 
@@ -133,6 +131,7 @@ public class ManageActivitiesFragment extends Fragment {
                 spinnerInstructorFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
             }
         });
+
 
         Button btnTop10 = rootView.findViewById(R.id.btnTop10);
 

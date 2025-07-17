@@ -156,20 +156,25 @@ public class ParticipantActivitiesFragment extends Fragment {
         List<String> instructorNames = new ArrayList<>(List.of("All Instructors"));
         uniqueInstructorNamesSet.add("All Instructors");
 
-        FirebaseActivityHelper.fetchAllInstructors((snapshots, error) -> {
-            if (error != null || snapshots == null) return;
-            for (DocumentSnapshot doc : snapshots.getDocuments()) {
-                InstructorUser instructor = doc.toObject(InstructorUser.class);
-                if (instructor != null && uniqueInstructorNamesSet.add(instructor.getFullName())) {
-                    instructorNames.add(instructor.getFullName());
-                    instructorNameToId.put(instructor.getFullName(), doc.getId());
+        FirebaseActivityHelper.fetchAllInstructors(getContext(), (instructors) -> {
+            if (instructors == null || instructors.isEmpty()) return;
+
+            for (InstructorUser instructor : instructors) {
+                String name = instructor.getFullName();
+                String id = instructor.getUid();
+
+                if (name != null && uniqueInstructorNamesSet.add(name)) {
+                    instructorNames.add(name);
+                    instructorNameToId.put(name, id);
                 }
             }
 
-            ArrayAdapter<String> instructorAdapter = new ArrayAdapter<>(requireContext(),
-                    android.R.layout.simple_spinner_dropdown_item, instructorNames);
-            spinnerInstructorFilter.setAdapter(instructorAdapter);
-            spinnerInstructorFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+            if (isSafe()) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                        android.R.layout.simple_spinner_dropdown_item, instructorNames);
+                spinnerInstructorFilter.setAdapter(adapter);
+                spinnerInstructorFilter.setOnItemSelectedListener(new SimpleSpinnerListener(this::applyFilters));
+            }
         });
 
         etSearch.addTextChangedListener(new TextWatcher() {

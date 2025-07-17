@@ -5,7 +5,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.event.youthSphere.local.ActivityDBHelper;
+import com.event.youthSphere.local.InstructorDBHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
+import com.event.youthSphere.models.users.InstructorUser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.*;
 import com.google.firebase.firestore.EventListener;
@@ -104,9 +106,34 @@ public class FirebaseActivityHelper {
     }
 
     // Fetch users with role INSTRUCTOR
-    public static void fetchAllInstructors(EventListener<QuerySnapshot> listener) {
-        userRef.whereEqualTo("role", "INSTRUCTOR").addSnapshotListener(listener);
+    public static void fetchAllInstructors(Context context, OnFetchInstructor callback) {
+        FirebaseFirestore.getInstance().collection("users")
+                .whereEqualTo("role", "INSTRUCTOR")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<InstructorUser> instructors = new ArrayList<>();
+                    InstructorDBHelper dbHelper = new InstructorDBHelper(context);
+
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        InstructorUser model = doc.toObject(InstructorUser.class);
+                        dbHelper.insertOrUpdate(model); // sync to SQLite
+                        instructors.add(model);
+                    }
+
+                    callback.onSuccess(instructors);
+                })
+                .addOnFailureListener(e -> {
+                    InstructorDBHelper dbHelper = new InstructorDBHelper(context);
+                    List<InstructorUser> offlineInstructors = dbHelper.getAllInstructors();
+                    callback.onSuccess(offlineInstructors);
+                });
     }
+
+    public interface OnFetchInstructor {
+        void onSuccess(List<InstructorUser> instructors);
+    }
+
+
 
     public static void deleteActivityAndUpdateInstructor(String activityId, String instructorId, OnCompleteListener<Void> listener) {
         WriteBatch batch = FirebaseFirestore.getInstance().batch();

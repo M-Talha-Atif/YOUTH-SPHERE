@@ -38,5 +38,18 @@ public class ParticipantUser extends User {
         return getFullName();
     }
 
+    public List<String> getActivityIds() {
+        return activityIds;
+    }
+
+    @Override
+    public String getFullName() {
+        return super.getFullName();
+    }
+
+    @Override
+    public String getEmail() {
+        return super.getEmail();
+    }
 }
 

@@ -22,6 +22,14 @@ public abstract class User implements RoleUser {
         this.fullName = fullName;
     }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     @Override
     public String getUid() {
         return uid;
