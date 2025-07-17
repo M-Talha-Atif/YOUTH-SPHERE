@@ -91,6 +91,18 @@ public class UploadPhotoDialogFragment extends DialogFragment {
 
 
     private void openCamera() {
+        if (CameraPermissionHelper.hasCameraPermission(requireContext())) {
+            launchCameraIntent();
+        } else {
+            requestPermissions(
+                    new String[]{android.Manifest.permission.CAMERA},
+                    CameraPermissionHelper.CAMERA_PERMISSION_CODE
+            );
+        }
+    }
+
+
+    private void launchCameraIntent() {
         try {
             File imageFile = new File(requireContext().getCacheDir(), "captured_image.jpg");
             imageUri = FileProvider.getUriForFile(
@@ -107,6 +119,7 @@ public class UploadPhotoDialogFragment extends DialogFragment {
             Toast.makeText(getContext(), "Error opening camera", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     @Override

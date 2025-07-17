@@ -76,7 +76,7 @@ public class UpdateStatusDialogFragment extends DialogFragment {
 
                 String by;
                 if (f.getInstructorId() != null) {
-                    by = "Instructor ID: " + f.getInstructorId(); // You can map ID to name here
+                    by = "Instructor ID: " + f.getInstructorId();
                 } else if (f.getParentId() != null) {
                     by = "Parent ID: " + f.getParentId();
                 } else {

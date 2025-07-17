@@ -62,7 +62,7 @@ public class FirebaseParticipantHelper {
 
                                         Date startDate = activityDoc.getDate("startDate");
                                         if (startDate != null && startDate.after(new Date())) {
-                                            // Future activity — skip
+                                            // Future activities — skip
                                             if (loaded.incrementAndGet() == total) {
                                                 finalizeProgressData(callback, domainCount, domainRatings, totalScore, scoreCount, validActivities.get());
                                             }

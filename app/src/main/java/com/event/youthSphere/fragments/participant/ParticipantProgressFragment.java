@@ -49,8 +49,6 @@ public class ParticipantProgressFragment extends Fragment {
         txtTotalActivities = view.findViewById(R.id.txtTotalActivities);
         txtAvgScore = view.findViewById(R.id.txtAvgScore);
         txtDomainDistribution = view.findViewById(R.id.txtDomainDistribution);
-
-        // Custom calendar
         txtMonthTitle = view.findViewById(R.id.txtMonthTitle);
         btnPrevMonth = view.findViewById(R.id.btnPrevMonth);
         btnNextMonth = view.findViewById(R.id.btnNextMonth);
@@ -72,8 +70,8 @@ public class ParticipantProgressFragment extends Fragment {
             setupCalendarGrid(displayedMonth);
         });
 
-        fetchActivityDates(); // load Firebase data
-        fetchUserProgress(); // fetch progress & user info
+        fetchActivityDates(); // activities
+        fetchUserProgress(); // fetch user progress like average rating
 
         return view;
     }

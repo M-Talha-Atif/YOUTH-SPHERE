@@ -27,23 +27,6 @@ public class FirebaseParentHelper {
                 .addOnFailureListener(e -> callback.accept(null, e));
     }
 
-    public static void getCurrentParent(BiConsumer<ParentUser, Exception> callback) {
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        db.collection("users").document(uid)
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    ParentUser parent = snapshot.toObject(ParentUser.class);
-                    callback.accept(parent, null);
-                })
-                .addOnFailureListener(e -> callback.accept(null, e));
-    }
-
-    public static void updateChildIds(String parentId, List<String> updatedChildIds, BiConsumer<Boolean, Exception> callback) {
-        db.collection("users").document(parentId)
-                .update("childIds", updatedChildIds)
-                .addOnSuccessListener(unused -> callback.accept(true, null))
-                .addOnFailureListener(e -> callback.accept(false, e));
-    }
 
     public static void isChildAlreadyAdded(String childId, BiConsumer<Boolean, Exception> callback) {
         db.collection("users")
