@@ -17,36 +17,34 @@ import com.event.youthSphere.R;
 import com.event.youthSphere.bottomsheet.superadmin.UpdateStatusDialogFragment;
 import com.event.youthSphere.models.activity.ActivityModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Adapter for displaying activity items in a RecyclerView
  */
-public class ActivityAdminAdapter extends ListAdapter<ActivityModel, ActivityAdminAdapter.ActivityViewHolder> {
-
-    /**
-     * Callback for calculating the difference between two lists of activities
-     */
-    private static final DiffUtil.ItemCallback<ActivityModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ActivityModel>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull ActivityModel oldItem, @NonNull ActivityModel newItem) {
-            return oldItem.getId().equals(newItem.getId());
-        }
-
-        @Override
-        public boolean areContentsTheSame(@NonNull ActivityModel oldItem, @NonNull ActivityModel newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+public class ActivityAdminAdapter extends RecyclerView.Adapter<ActivityAdminAdapter.ActivityViewHolder> {
 
 
 
-
+    private List<ActivityModel> activityList = new ArrayList<>();
 
 
     /**
      * Constructor for ActivityAdapter
      */
     public ActivityAdminAdapter() {
-        super(DIFF_CALLBACK);
+        super();
+    }
+
+    public void setActivityList(List<ActivityModel> list) {
+        this.activityList = list != null ? list : new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        return activityList.size();
     }
 
 
@@ -60,7 +58,8 @@ public class ActivityAdminAdapter extends ListAdapter<ActivityModel, ActivityAdm
 
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
-        ActivityModel activity = getItem(position);
+        ActivityModel activity = activityList.get(position);
+
         holder.tvName.setText(activity.getName());
         holder.tvDomain.setText(holder.itemView.getContext().getString(R.string.domain_label, activity.getDomain()));
         holder.tvAgeRange.setText(holder.itemView.getContext().getString(R.string.age_range_label,

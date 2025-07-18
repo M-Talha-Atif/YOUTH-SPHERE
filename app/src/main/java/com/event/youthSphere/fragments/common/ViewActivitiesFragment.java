@@ -300,7 +300,7 @@ public class ViewActivitiesFragment extends Fragment {
 
         }
 
-        adapter.submitList(filtered);
+        adapter.setActivityList(filtered);
     }
 
 }

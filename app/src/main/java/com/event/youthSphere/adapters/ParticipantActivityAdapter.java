@@ -15,22 +15,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.event.youthSphere.R;
 import com.event.youthSphere.models.activity.ActivityModel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class ParticipantActivityAdapter extends ListAdapter<ActivityModel, ParticipantActivityAdapter.ActivityViewHolder> {
+public class ParticipantActivityAdapter extends RecyclerView.Adapter< ParticipantActivityAdapter.ActivityViewHolder> {
 
-    private static final DiffUtil.ItemCallback<ActivityModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ActivityModel>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull ActivityModel oldItem, @NonNull ActivityModel newItem) {
-            return oldItem.getId().equals(newItem.getId());
-        }
+    private List<ActivityModel> activityList = new ArrayList<>();
 
-        @Override
-        public boolean areContentsTheSame(@NonNull ActivityModel oldItem, @NonNull ActivityModel newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+
+
+    public void setActivityList(List<ActivityModel> list) {
+        this.activityList = list != null ? list : new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        return activityList.size();
+    }
+
 
     private Set<String> enrolledActivityIds = new HashSet<>();
     private OnEnrollClickListener enrollListener;
@@ -40,7 +45,7 @@ public class ParticipantActivityAdapter extends ListAdapter<ActivityModel, Parti
     }
 
     public ParticipantActivityAdapter() {
-        super(DIFF_CALLBACK);
+        super();
     }
 
     public void setOnEnrollClickListener(OnEnrollClickListener listener) {
@@ -61,7 +66,7 @@ public class ParticipantActivityAdapter extends ListAdapter<ActivityModel, Parti
 
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
-        ActivityModel activity = getItem(position);
+        ActivityModel activity = activityList.get(position);
         boolean isEnrolled = enrolledActivityIds.contains(activity.getId());
 
         holder.tvName.setText(activity.getName());

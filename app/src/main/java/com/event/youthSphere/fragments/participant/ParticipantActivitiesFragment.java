@@ -327,7 +327,7 @@ public class ParticipantActivitiesFragment extends Fragment {
             }
         }
 
-        adapter.submitList(filtered);
+        adapter.setActivityList(filtered);
     }
 
     public static int parseIntSafe(String input, int defaultValue) {

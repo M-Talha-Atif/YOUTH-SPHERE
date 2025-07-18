@@ -137,7 +137,8 @@ public class ManageActivitiesFragment extends Fragment {
 
         btnTop10.setOnClickListener(v -> {
             FirebaseActivityHelper.getTop10Activities(topList -> {
-                if (isSafe()) adapter.submitList(topList);
+                if (isSafe()) adapter.setActivityList(topList);
+
             });
         });
 
@@ -392,7 +393,8 @@ public class ManageActivitiesFragment extends Fragment {
 
         }
 
-        adapter.submitList(filtered);
+        adapter.setActivityList(filtered);
+
     }
 
 }

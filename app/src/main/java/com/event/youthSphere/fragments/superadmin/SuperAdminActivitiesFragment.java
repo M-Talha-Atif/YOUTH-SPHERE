@@ -315,7 +315,7 @@ public class SuperAdminActivitiesFragment extends Fragment {
 
         }
 
-        adapter.submitList(filtered);
+        adapter.setActivityList(filtered);
     }
 
 }

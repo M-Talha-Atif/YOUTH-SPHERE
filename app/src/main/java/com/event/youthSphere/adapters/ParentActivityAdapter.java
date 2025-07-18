@@ -13,25 +13,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.event.youthSphere.R;
 import com.event.youthSphere.models.activity.ActivityModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Adapter for displaying activity items in a RecyclerView
  */
-public class ParentActivityAdapter extends ListAdapter<ActivityModel, ParentActivityAdapter.ActivityViewHolder> {
+public class ParentActivityAdapter extends RecyclerView.Adapter< ParentActivityAdapter.ActivityViewHolder> {
+    private List<ActivityModel> activityList = new ArrayList<>();
 
-    /**
-     * Callback for calculating the difference between two lists of activities
-     */
-    private static final DiffUtil.ItemCallback<ActivityModel> DIFF_CALLBACK = new DiffUtil.ItemCallback<ActivityModel>() {
-        @Override
-        public boolean areItemsTheSame(@NonNull ActivityModel oldItem, @NonNull ActivityModel newItem) {
-            return oldItem.getId().equals(newItem.getId());
-        }
 
-        @Override
-        public boolean areContentsTheSame(@NonNull ActivityModel oldItem, @NonNull ActivityModel newItem) {
-            return oldItem.equals(newItem);
-        }
-    };
+
+    public void setActivityList(List<ActivityModel> list) {
+        this.activityList = list != null ? list : new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemCount() {
+        return activityList.size();
+    }
+
 
     private OnItemClickListener listener;
 
@@ -46,7 +48,6 @@ public class ParentActivityAdapter extends ListAdapter<ActivityModel, ParentActi
      * Constructor for ActivityAdapter
      */
     public ParentActivityAdapter(OnItemClickListener listener) {
-        super(DIFF_CALLBACK);
         this.listener = listener;
     }
 
@@ -60,7 +61,7 @@ public class ParentActivityAdapter extends ListAdapter<ActivityModel, ParentActi
 
     @Override
     public void onBindViewHolder(@NonNull ActivityViewHolder holder, int position) {
-        ActivityModel activity = getItem(position);
+        ActivityModel activity = activityList.get(position);
         holder.tvName.setText(activity.getName());
         holder.tvDomain.setText(holder.itemView.getContext().getString(R.string.domain_label, activity.getDomain()));
         holder.tvAgeRange.setText(holder.itemView.getContext().getString(R.string.age_range_label,
