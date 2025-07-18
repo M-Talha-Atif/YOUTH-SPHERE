@@ -30,7 +30,6 @@ import com.event.youthSphere.firebase.FirebaseAuthHelper;
 public class SignupFragment extends Fragment {
 
 
-    private FirebaseAuthHelper firebaseAuthHelper;
 
     // UI components
     private EditText emailEditText;
@@ -39,6 +38,9 @@ public class SignupFragment extends Fragment {
     private EditText confirmPasswordEditText;
     private Spinner roleSpinner;
     private Button signupButton;
+
+    private FirebaseAuthHelper firebaseAuthHelper;
+
 
     private static final String[] ROLES = {
             "Participant", "Parent", "Instructor", "Coordinator", "Super Admin"
@@ -70,8 +72,7 @@ public class SignupFragment extends Fragment {
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        firebaseAuthHelper = new FirebaseAuthHelper();
-
+        firebaseAuthHelper = new FirebaseAuthHelper(requireContext());
         initViews(view);
         setupUI();
     }
@@ -133,31 +134,32 @@ public class SignupFragment extends Fragment {
 
         firebaseAuthHelper.signup(email, pass, fullName, role)
                 .addOnSuccessListener(task -> {
+                    // After successful signup in Firebase, store in SQLite as backup
+                    String uid = firebaseAuthHelper.getCurrentFirebaseUid();
+                    firebaseAuthHelper.localSignup(
+                            uid,
+                            email,
+                            fullName,
+                            pass,
+                            role,
+                            "", // childIds
+                            "", // activityIds
+                            role == UserRole.INSTRUCTOR ? "" : null, // fieldOfSpecialization
+                            role == UserRole.INSTRUCTOR ? "" : null  // employmentStartDate
+                    );
                     Toast.makeText(requireContext(), "Signup successful", Toast.LENGTH_SHORT).show();
-
                 })
                 .addOnFailureListener(e -> {
+
+
                     Toast.makeText(requireContext(), "Signup failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
                 });
     }
 
 
 
 
-
-
-
-    /**
-     * Shows or hides the loading indicator.
-     * @param show Whether to show the loading indicator (true) or hide it (false)
-     */
-
-//    private void showLoading(boolean show) {
-//        if (loadingOverlay != null && loadingProgressBar != null) {
-//            loadingOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
-//            loadingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-//        }
-//    }
 
 
 

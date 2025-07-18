@@ -233,7 +233,7 @@ public class ParticipantActivitiesFragment extends Fragment {
     }
 
     private void loadUserEnrollments() {
-        FirebaseEnrollmentHelper.getUserEnrollments(currentUserId, task -> {
+        FirebaseEnrollmentHelper.getUserEnrollments( requireContext(), currentUserId, task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 Set<String> enrolledIds = new HashSet<>();
                 for (EnrollmentModel model : task.getResult()) {
@@ -243,22 +243,24 @@ public class ParticipantActivitiesFragment extends Fragment {
                 adapter.setEnrolledActivityIds(enrolledIds);
                 adapter.setOnEnrollClickListener((activityModel, isEnrolled) -> {
                     if (isEnrolled) {
-                        FirebaseEnrollmentHelper.unenrollUser(currentUserId, activityModel.getId(), unenrollTask -> {
-                            if (unenrollTask.isSuccessful()) {
-                                enrolledIds.remove(activityModel.getId());
-                                adapter.setEnrolledActivityIds(new HashSet<>(enrolledIds));
-                            }
 
-                            else {
-                                Exception e = unenrollTask.getException();
-                                String msg = e != null ? e.getMessage() : "Unenrollment failed";
-                                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-                            }
+                        if (isSafe()) {
+                            FirebaseEnrollmentHelper.unenrollUser(requireContext(), currentUserId, activityModel.getId(), unenrollTask -> {
+                                if (unenrollTask.isSuccessful()) {
+                                    enrolledIds.remove(activityModel.getId());
+                                    adapter.setEnrolledActivityIds(new HashSet<>(enrolledIds));
+                                } else {
+                                    Exception e = unenrollTask.getException();
+                                    String msg = e != null ? e.getMessage() : "Unenrollment failed";
+                                    Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                                }
 
 
-                        });
+                            });
+                    }
                     } else {
-                        FirebaseEnrollmentHelper.enrollUser(activityModel.getId(), currentUser, (success, exception) -> {
+                        if (isSafe()) {
+                        FirebaseEnrollmentHelper.enrollUser( requireContext(), activityModel.getId(), currentUser, (success, exception) -> {
                             if (success) {
                                 enrolledIds.add(activityModel.getId());
                                 adapter.setEnrolledActivityIds(new HashSet<>(enrolledIds));
@@ -267,6 +269,8 @@ public class ParticipantActivitiesFragment extends Fragment {
                                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                             }
                         });
+
+                        }
 
                     }
                 });

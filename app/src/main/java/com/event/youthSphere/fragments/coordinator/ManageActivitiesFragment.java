@@ -166,6 +166,7 @@ public class ManageActivitiesFragment extends Fragment {
                         .setMessage("Are you sure you want to delete this activity?")
                         .setPositiveButton("Delete", (dialog, which) -> {
                             FirebaseActivityHelper.deleteActivityAndUpdateInstructor(
+                                    requireContext(),
                                     activity.getId(),
                                     activity.getInstructorId(),
                                     task -> {

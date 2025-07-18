@@ -14,22 +14,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.event.youthSphere.R;
 import com.event.youthSphere.adapters.ActivityAdapter;
-import com.event.youthSphere.bottomsheet.coordinator.activity.AddActivityBottomSheetDialog;
-import com.event.youthSphere.bottomsheet.coordinator.activity.AssignActivityBottomSheetDialog;
-import com.event.youthSphere.bottomsheet.coordinator.activity.EditActivityBottomSheetDialog;
+import com.event.youthSphere.adapters.ActivityInstructorAdapter;
 import com.event.youthSphere.firebase.FirebaseActivityHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.users.InstructorUser;
 import com.event.youthSphere.utils.SimpleSpinnerListener;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 
 
@@ -38,7 +32,7 @@ import java.util.*;
 public class ViewActivitiesFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private ActivityAdapter adapter;
+    private ActivityInstructorAdapter adapter;
     private ArrayList<ActivityModel> activityList;
     private View rootView;
 
@@ -134,7 +128,7 @@ public class ViewActivitiesFragment extends Fragment {
         });
 
         activityList = new ArrayList<>();
-        adapter = new ActivityAdapter();
+        adapter = new ActivityInstructorAdapter();
 
         // date filter
         etStartDate.setFocusable(false);
@@ -151,43 +145,7 @@ public class ViewActivitiesFragment extends Fragment {
 
 
 
-        adapter.setOnDeleteClickListener(activity -> {
-            if (isSafe()) {
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Delete Activity")
-                        .setMessage("Are you sure you want to delete this activity?")
-                        .setPositiveButton("Delete", (dialog, which) -> {
-                            FirebaseActivityHelper.deleteActivityAndUpdateInstructor(
-                                    activity.getId(),
-                                    activity.getInstructorId(),
-                                    task -> {
-                                        if (task.isSuccessful()) {
-                                            if (!isAdded() || rootView == null) return;
 
-                                            if (isSafe()) {
-                                                Snackbar.make(rootView, "Activity deleted", Snackbar.LENGTH_SHORT).show();
-                                            }
-                                            loadActivities();
-                                        } else {
-                                            if (!isAdded() || rootView == null) return;
-
-                                            if (isSafe()) {
-                                                Snackbar.make(rootView, "Failed to delete activity", Snackbar.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    }
-                            );
-                        })
-                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                        .show();
-            }
-        });
-
-
-        adapter.setOnEditClickListener(activity -> {
-            EditActivityBottomSheetDialog dialog = new EditActivityBottomSheetDialog(activity, this::loadActivities);
-            dialog.show(getChildFragmentManager(), "EditActivityDialog");
-        });
 
 
         if (isSafe()) {

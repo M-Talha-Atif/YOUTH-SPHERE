@@ -1,5 +1,8 @@
 package com.event.youthSphere.firebase;
 
+import android.content.Context;
+
+import com.event.youthSphere.localdb.ActivityDBHelper;
 import com.event.youthSphere.models.participant.FeedbackModel;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,12 +32,22 @@ public class FirebaseSuperAdminHelper {
     }
 
     /** Update the activity’s status */
-    public static void updateActivityStatus(String activityId, String status,
-                                            BiConsumer<Boolean, Exception> cb) {
+    public static void updateActivityStatus(Context context, String activityId, String status,
+                                                BiConsumer<Boolean, Exception> cb) {
         db.collection("activities").document(activityId)
                 .update("status", status)
-                .addOnSuccessListener(u -> cb.accept(true, null))
+                .addOnSuccessListener(u -> {
+                    // local DB after Firebase update
+                    ActivityDBHelper helper = new ActivityDBHelper(context);
+                    boolean localSuccess = helper.updateActivityStatus(activityId, status);
+                    if (!localSuccess) {
+                        cb.accept(false, new Exception("Firebase updated but local DB failed"));
+                    } else {
+                        cb.accept(true, null);
+                    }
+                })
                 .addOnFailureListener(e -> cb.accept(false, e));
     }
+
 }
 

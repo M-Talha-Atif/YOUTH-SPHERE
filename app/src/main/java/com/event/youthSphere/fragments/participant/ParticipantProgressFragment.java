@@ -113,7 +113,7 @@ public class ParticipantProgressFragment extends Fragment {
 
                     txtName.setText(user.getFullName());
 
-                    FirebaseParticipantHelper.getProgressData(user.getUid(), (progress, error) -> {
+                    FirebaseParticipantHelper.getProgressData( requireContext(), user.getUid(), (progress, error) -> {
                         if (progress == null) return;
 
                         txtTotalActivities.setText("Activities Attended: " + progress.getTotalActivities());

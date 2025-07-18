@@ -67,7 +67,7 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
         btnSubmit = view.findViewById(R.id.btnSubmitFeedback);
 
 
-        FirebaseEnrollmentHelper.getUserEnrollments(child.getUid(), task -> {
+        FirebaseEnrollmentHelper.getUserEnrollments( requireContext(), child.getUid(), task -> {
             enrollments = task.getResult();
 
             if (enrollments == null || enrollments.isEmpty()) {

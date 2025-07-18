@@ -1,11 +1,12 @@
 package com.event.youthSphere.firebase;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
-
-import com.event.youthSphere.local.ActivityDBHelper;
-import com.event.youthSphere.local.InstructorDBHelper;
+import com.event.youthSphere.localdb.ActivityDBHelper;
+import com.event.youthSphere.localdb.InstructorDBHelper;
+import com.event.youthSphere.localdb.UserDBHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.users.InstructorUser;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,20 +22,32 @@ public class FirebaseActivityHelper {
             FirebaseFirestore.getInstance().collection("users");
 
 
-    public static void createActivity(ActivityModel activity, OnCompleteListener<Void> listener) {
+    // --- Added context parameter so we can sync local SQLite after Firebase success ---
+    public static void createActivity(Context context, ActivityModel activity, OnCompleteListener<Void> listener) {
         String id = activityRef.document().getId();
         activity.setId(id);
-        activityRef.document(id).set(activity).addOnCompleteListener(listener);
+        activityRef.document(id).set(activity).addOnCompleteListener(task -> {
+            // After successful Firebase creation, sync to local SQLite
+            if (task.isSuccessful()) {
+                ActivityDBHelper dbHelper = new ActivityDBHelper(context);
+                dbHelper.insertOrUpdate(activity);
+            }
+            listener.onComplete(task);
+        });
     }
 
     // Update activity
-    public static void updateActivity(ActivityModel activity, OnCompleteListener<Void> listener) {
-        if (activity.getId() == null) return;
-        activityRef.document(activity.getId()).set(activity).addOnCompleteListener(listener);
-    }
 
-    public static void deleteActivity(String id, OnCompleteListener<Void> listener) {
-        activityRef.document(id).delete().addOnCompleteListener(listener);
+    public static void updateActivity(Context context, ActivityModel activity, OnCompleteListener<Void> listener) {
+        if (activity.getId() == null) return;
+        activityRef.document(activity.getId()).set(activity).addOnCompleteListener(task -> {
+            // After successful Firebase update, sync to local SQLite
+            if (task.isSuccessful()) {
+                ActivityDBHelper dbHelper = new ActivityDBHelper(context);
+                dbHelper.insertOrUpdate(activity);
+            }
+            listener.onComplete(task);
+        });
     }
 
     // Get all activities
@@ -48,6 +61,7 @@ public class FirebaseActivityHelper {
 
                     for (QueryDocumentSnapshot doc : snapshot) {
                         ActivityModel model = doc.toObject(ActivityModel.class);
+                        Log.d("ActivityHelper", model.toString());
                         dbHelper.insertOrUpdate(model); // Sync to SQLite
                         activityList.add(model);
                     }
@@ -80,9 +94,10 @@ public class FirebaseActivityHelper {
     // Assign instructor to activity
     public static void assignActivityToInstructor(String activityId, String instructorId,
                                                   String specialization, String employmentDate,
+                                                  Context context,
                                                   OnCompleteListener<Void> listener) {
 
-        // Update the activity with instructorId
+        //  Remote update in Firestore
         activityRef.document(activityId).update("instructorId", instructorId)
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -90,20 +105,55 @@ public class FirebaseActivityHelper {
                         return;
                     }
 
-                    // Prepare instructor updates
+                    // Update instructor fields in Firestore
                     Map<String, Object> instructorUpdates = new HashMap<>();
                     instructorUpdates.put("activityIds", FieldValue.arrayUnion(activityId));
                     instructorUpdates.put("fieldOfSpecialization", specialization);
                     instructorUpdates.put("employmentStartDate", employmentDate);
 
-                    //  Apply updates to instructor
                     FirebaseFirestore.getInstance()
                             .collection("users")
                             .document(instructorId)
                             .update(instructorUpdates)
-                            .addOnCompleteListener(listener);
+                            .addOnCompleteListener(remoteTask -> {
+
+                                // Local SQLite updates
+                                // --- Update local activity ---
+                                ActivityDBHelper activityDB = new ActivityDBHelper(context);
+                                activityDB.updateInstructorId(activityId, instructorId);
+
+                                // --- Update local instructor ---
+                                UserDBHelper userDB = new UserDBHelper(context);
+                                ContentValues instructorData = userDB.getUserByUid(instructorId);
+
+                                if (instructorData != null) {
+                                    String oldActivityIds = instructorData.getAsString("activityIds");
+                                    List<String> updatedList = new ArrayList<>();
+                                    if (oldActivityIds != null && !oldActivityIds.isEmpty()) {
+                                        updatedList = new ArrayList<>(Arrays.asList(oldActivityIds.split(",")));
+                                    }
+                                    if (!updatedList.contains(activityId)) {
+                                        updatedList.add(activityId);
+                                    }
+                                    String updatedIds = String.join(",", updatedList);
+
+                                    userDB.updateInstructor(
+                                            instructorId,
+                                            null, // fullName
+                                            null, // email
+                                            null, // password
+                                            updatedIds,
+                                            specialization,
+                                            employmentDate
+                                    );
+                                }
+
+                                //  Complete the operation
+                                listener.onComplete(remoteTask);
+                            });
                 });
     }
+
 
     // Fetch users with role INSTRUCTOR
     public static void fetchAllInstructors(Context context, OnFetchInstructor callback) {
@@ -116,6 +166,7 @@ public class FirebaseActivityHelper {
 
                     for (QueryDocumentSnapshot doc : snapshot) {
                         InstructorUser model = doc.toObject(InstructorUser.class);
+                        Log.d("Instructor", model.toString());
                         dbHelper.insertOrUpdate(model); // sync to SQLite
                         instructors.add(model);
                     }
@@ -135,7 +186,7 @@ public class FirebaseActivityHelper {
 
 
 
-    public static void deleteActivityAndUpdateInstructor(String activityId, String instructorId, OnCompleteListener<Void> listener) {
+    public static void deleteActivityAndUpdateInstructor(Context context, String activityId, String instructorId, OnCompleteListener<Void> listener) {
         WriteBatch batch = FirebaseFirestore.getInstance().batch();
         batch.delete(activityRef.document(activityId));
 
@@ -144,7 +195,20 @@ public class FirebaseActivityHelper {
             batch.update(instructorRef, "activityIds", FieldValue.arrayRemove(activityId));
         }
 
-        batch.commit().addOnCompleteListener(listener);
+        batch.commit().addOnCompleteListener(task -> {
+            // --- Sync local SQLite: delete activity and update instructor's activityIds ---
+            if (task.isSuccessful()) {
+                ActivityDBHelper activityDB = new ActivityDBHelper(context);
+                activityDB.deleteActivity(activityId, context);
+
+                UserDBHelper userDB = new UserDBHelper(context);
+                if (instructorId != null) {
+                    userDB.removeActivityFromInstructor(instructorId, activityId);
+                }
+
+            }
+            listener.onComplete(task);
+        });
     }
 
     public interface TopActivitiesCallback {

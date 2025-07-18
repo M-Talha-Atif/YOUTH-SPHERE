@@ -65,7 +65,7 @@ public class ManageChildrenFragment extends Fragment {
             ParticipantUser selected = (ParticipantUser) spinnerChildren.getSelectedItem();
             if (selected == null) return;
 
-            FirebaseParentHelper.addChildToParent(selected.getUid(), (success, error) -> {
+            FirebaseParentHelper.addChildToParent(requireContext(), selected.getUid(), (success, error) -> {
                 if (success) {
                     Toast.makeText(getContext(), "Child added!", Toast.LENGTH_SHORT).show();
                     loadChildren();

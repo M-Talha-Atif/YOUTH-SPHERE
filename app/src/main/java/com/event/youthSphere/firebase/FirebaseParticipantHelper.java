@@ -1,5 +1,7 @@
 package com.event.youthSphere.firebase;
 
+import android.content.Context;
+
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.participant.EnrollmentModel;
 import com.event.youthSphere.models.participant.ParticipantProgressData;
@@ -21,8 +23,8 @@ import java.util.function.BiConsumer;
 
 public class FirebaseParticipantHelper {
 
-    public static void getProgressData(String participantId, BiConsumer<ParticipantProgressData, Exception> callback) {
-        FirebaseEnrollmentHelper.getUserEnrollments(participantId, enrollmentTask -> {
+    public static void getProgressData(Context context, String participantId, BiConsumer<ParticipantProgressData, Exception> callback) {
+        FirebaseEnrollmentHelper.getUserEnrollments( context, participantId, enrollmentTask -> {
             List<EnrollmentModel> enrollments = enrollmentTask.getResult();
 
             if (enrollments == null || enrollments.isEmpty()) {

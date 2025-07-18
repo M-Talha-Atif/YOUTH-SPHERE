@@ -1,4 +1,4 @@
-package com.event.youthSphere.local;
+package com.event.youthSphere.localdb;
 
 
 import android.content.ContentValues;

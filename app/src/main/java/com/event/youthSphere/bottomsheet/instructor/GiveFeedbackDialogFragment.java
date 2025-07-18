@@ -80,7 +80,7 @@ public class GiveFeedbackDialogFragment extends DialogFragment {
                     new Date()
             );
 
-            FirebaseFeedbackHelper.addFeedback(feedback, new FirebaseFeedbackHelper.OnFeedbackAddedListener() {
+            FirebaseFeedbackHelper.addFeedback(requireContext(), feedback, new FirebaseFeedbackHelper.OnFeedbackAddedListener() {
                 @Override
                 public void onSuccess() {
                     Toast.makeText(getContext(), "Feedback submitted!", Toast.LENGTH_SHORT).show();

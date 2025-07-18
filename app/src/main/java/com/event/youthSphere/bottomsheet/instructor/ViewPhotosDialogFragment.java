@@ -43,16 +43,22 @@ public class ViewPhotosDialogFragment extends DialogFragment {
     }
 
     private void loadImages() {
-        FirebaseInstructorHelper.getActivityImages(activityId, (result, error) -> {
-            if (error != null || result == null) {
-                Toast.makeText(getContext(), "Failed to load images", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if (activityId == null) return;
+        if (getContext() == null) return;
+        if (isAdded()) {
 
-            images.clear();
-            images.addAll(result);
-            adapter.notifyDataSetChanged();
-        });
+            FirebaseInstructorHelper.getActivityImages( requireContext(), activityId, (result, error) -> {
+                if (error != null || result == null) {
+                    Toast.makeText(getContext(), "Failed to load images", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                images.clear();
+                images.addAll(result);
+                adapter.notifyDataSetChanged();
+            });
+        }
+
     }
 
     /**

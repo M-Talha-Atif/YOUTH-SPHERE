@@ -176,7 +176,8 @@ public class EditActivityBottomSheetDialog extends DialogFragment {
             activity.setDays(selectedDays);
             activity.setMaxParticipants(maxParticipants);
 
-            FirebaseActivityHelper.updateActivity(activity, task -> {
+
+            FirebaseActivityHelper.updateActivity(requireContext(), activity, task -> {
                 if (task.isSuccessful()) {
                     if(getContext() != null && isAdded() ) {
                         Toast.makeText(getContext(), "Activity updated", Toast.LENGTH_SHORT).show();

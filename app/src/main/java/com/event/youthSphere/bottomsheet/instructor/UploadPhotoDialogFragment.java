@@ -72,6 +72,7 @@ public class UploadPhotoDialogFragment extends DialogFragment {
 
             if (base64Image != null && activity != null) {
                 FirebaseInstructorHelper.uploadActivityImage(
+                        requireContext(),
                         activity.getId(),
                         base64Image,
                         activity.getDomain(),

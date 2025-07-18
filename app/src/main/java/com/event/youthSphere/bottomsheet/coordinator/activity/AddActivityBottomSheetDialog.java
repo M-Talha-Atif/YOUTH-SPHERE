@@ -203,7 +203,7 @@ public class AddActivityBottomSheetDialog extends DialogFragment {
                 );
 
 
-                FirebaseActivityHelper.createActivity(model, task -> {
+                FirebaseActivityHelper.createActivity( requireContext(), model, task -> {
                     if (task.isSuccessful()) {
                         dismiss();
                         if (onActivityAdded != null) onActivityAdded.run();

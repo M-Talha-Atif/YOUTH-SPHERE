@@ -1,6 +1,7 @@
 package com.event.youthSphere.fragments.instructor;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -86,18 +87,21 @@ public class InstructorActivitiesFragment extends Fragment {
     private void loadInstructorActivities() {
         if (currentInstructorId == null) return;
 
-        FirebaseInstructorHelper.getInstructorActivities(currentInstructorId, task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                instructorActivities.clear();
-                task.getResult().getDocuments().forEach(doc -> {
-                    ActivityModel model = doc.toObject(ActivityModel.class);
-                    if (model != null) {
-                        model.setId(doc.getId());
-                        instructorActivities.add(model);
-                    }
-                });
-                adapter.notifyDataSetChanged();
+        FirebaseInstructorHelper.getInstructorActivities(requireContext(), currentInstructorId, (activities, error) -> {
+            instructorActivities.clear();
+
+            if (activities != null && !activities.isEmpty()) {
+                instructorActivities.addAll(activities);
             }
+
+            // Optionally log or show offline warning
+            if (error != null) {
+                Log.w("InstructorActivities", "Using fallback due to error: " + error.getMessage());
+                Toast.makeText(requireContext(), "Offline data loaded", Toast.LENGTH_SHORT).show();
+            }
+
+            adapter.notifyDataSetChanged();
         });
+
     }
 }

@@ -1,6 +1,9 @@
 package com.event.youthSphere.firebase;
 
 
+import android.content.Context;
+
+import com.event.youthSphere.localdb.FeedbackDBHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.participant.FeedbackModel;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -11,8 +14,9 @@ public class FirebaseFeedbackHelper {
 
     private static final String COLLECTION_NAME = "feedback";
 
-    public static void addFeedback(FeedbackModel feedback, OnFeedbackAddedListener listener) {
+    public static void addFeedback(Context context, FeedbackModel feedback, OnFeedbackAddedListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FeedbackDBHelper dbHelper = new FeedbackDBHelper(context);
 
         db.collection("activities").document(feedback.getActivityId())
                 .get()
@@ -40,13 +44,16 @@ public class FirebaseFeedbackHelper {
                             .get()
                             .addOnSuccessListener(querySnapshot -> {
                                 if (!querySnapshot.isEmpty()) {
-                                    listener.onFailure(new Exception("Feedback already submitted by this instructor."));
+                                    listener.onFailure(new Exception("Feedback already submitted online."));
                                     return;
                                 }
 
                                 db.collection(COLLECTION_NAME)
                                         .add(feedback)
-                                        .addOnSuccessListener(docRef -> listener.onSuccess())
+                                        .addOnSuccessListener(docRef -> {
+                                            dbHelper.insertFeedback(feedback); // Save locally
+                                            listener.onSuccess();
+                                        })
                                         .addOnFailureListener(listener::onFailure);
                             })
                             .addOnFailureListener(listener::onFailure);

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.event.youthSphere.activities.DashboardActivity;
@@ -23,7 +24,7 @@ public class LoginFragment extends Fragment {
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
 
-    private final FirebaseAuthHelper firebaseAuthHelper = new FirebaseAuthHelper();
+    private FirebaseAuthHelper firebaseAuthHelper;
 
 
     /**
@@ -63,6 +64,17 @@ public class LoginFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Called immediately after onCreateView() has returned, but before any saved state has been restored.
+     * @param view The View returned by onCreateView()
+     * @param savedInstanceState Bundle containing previous state, if any
+     */
+    @Override
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        firebaseAuthHelper = new FirebaseAuthHelper(requireContext());
+    }
 
     /**
      * Attempts user login with email and password.
@@ -84,7 +96,18 @@ public class LoginFragment extends Fragment {
                             .addOnSuccessListener(this::handleRoleSuccess)
                             .addOnFailureListener(e -> showError("Role fetch failed: " + e.getMessage()));
                 })
-                .addOnFailureListener(e -> showError("Login failed: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    // Fallback to local SQLite login
+                    String localRole = firebaseAuthHelper.localLogin(email, password);
+                    if (localRole != null) {
+                        SessionManager sessionManager = new SessionManager(requireContext());
+                        sessionManager.setLogin(true);
+                        navigateToDashboard(localRole);
+                        Toast.makeText(getContext(), "Logged in offline", Toast.LENGTH_SHORT).show();
+                    } else {
+                        showError("Login failed: " + e.getMessage());
+                    }
+                });
     }
 
     private void handleRoleSuccess(DocumentSnapshot document) {

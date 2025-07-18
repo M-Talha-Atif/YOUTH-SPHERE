@@ -81,7 +81,7 @@ public class EditInstructorBottomSheetDialog extends DialogFragment {
         ArrayAdapter<String> fieldAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, fields);
         spinnerField.setAdapter(fieldAdapter);
 
-// Select current specialization
+        // Select current specialization
         int currentIndex = fields.indexOf(instructor.getFieldOfSpecialization());
         if (currentIndex != -1) spinnerField.setSelection(currentIndex);
 
@@ -102,7 +102,7 @@ public class EditInstructorBottomSheetDialog extends DialogFragment {
             instructor.setFieldOfSpecialization(field);
             instructor.setEmploymentStartDate(date);
 
-            FirebaseCoordinateHelper.updateInstructor(instructor, task -> {
+            FirebaseCoordinateHelper.updateInstructor(requireContext(), instructor, task -> {
                 if (task.isSuccessful()) {
                     if (getContext() != null && isAdded()) {
                         Toast.makeText(getContext(), "Instructor updated", Toast.LENGTH_SHORT).show();

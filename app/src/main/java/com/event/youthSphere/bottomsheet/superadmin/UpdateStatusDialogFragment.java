@@ -101,7 +101,7 @@ public class UpdateStatusDialogFragment extends DialogFragment {
 
         btnSubmit.setOnClickListener(x -> {
             String selected = spinnerStatus.getSelectedItem().toString();
-            FirebaseSuperAdminHelper.updateActivityStatus(activity.getId(), selected, (ok, e2) -> {
+            FirebaseSuperAdminHelper.updateActivityStatus(requireContext(), activity.getId(), selected, (ok, e2) -> {
                 if (ok) {
                     Toast.makeText(getContext(), "Status updated.", Toast.LENGTH_SHORT).show();
                     dismiss();

@@ -73,5 +73,11 @@ public class InstructorUser extends User {
     public List<String> getActivityIds() {
         return activityIds;
     }
+
+    public String getActivityIdsAsCommaString() {
+        return activityIds != null ? String.join(",", activityIds) : "";
+    }
+
 }
+
 

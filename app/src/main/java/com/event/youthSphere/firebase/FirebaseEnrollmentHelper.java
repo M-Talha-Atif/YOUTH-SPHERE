@@ -1,5 +1,8 @@
 package com.event.youthSphere.firebase;
 
+import android.content.Context;
+
+import com.event.youthSphere.localdb.EnrollmentDBHelper;
 import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.participant.EnrollmentModel;
 import com.event.youthSphere.models.users.ParticipantUser;
@@ -24,7 +27,7 @@ public class FirebaseEnrollmentHelper {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public static void enrollUser(String activityId, ParticipantUser user, BiConsumer<Boolean, Exception> callback) {
+    public static void enrollUser(Context context, String activityId, ParticipantUser user, BiConsumer<Boolean, Exception> callback) {
         DocumentReference activityRef = db.collection("activities").document(activityId);
 
         db.runTransaction((Transaction.Function<Void>) transaction -> {
@@ -53,7 +56,6 @@ public class FirebaseEnrollmentHelper {
 
                     enrolledUserIds.add(user.getUid());
                     transaction.update(activityRef, "registeredCount", currentCount + 1);
-
                     // Save in top-level enrollments collection
                     DocumentReference enrollmentRef = db.collection("enrollments").document();
                     EnrollmentModel model = new EnrollmentModel(
@@ -65,16 +67,21 @@ public class FirebaseEnrollmentHelper {
                             activity.getDomain(),
                             activity.getDescription()
                     );
+
                     transaction.set(enrollmentRef, model);
 
+                    // Save to SQLite
+                    new EnrollmentDBHelper(context).insertEnrollment(model);
+
                     return null;
+
                 }).addOnSuccessListener(unused -> callback.accept(true, null))
                 .addOnFailureListener(e -> callback.accept(false, e));
     }
 
 
 
-    public static void unenrollUser(String participantId, String activityId, OnCompleteListener<Void> listener) {
+    public static void unenrollUser(Context context, String participantId, String activityId, OnCompleteListener<Void> listener) {
         db.collection("enrollments")
                 .whereEqualTo("participantId", participantId)
                 .whereEqualTo("activityId", activityId)
@@ -101,9 +108,10 @@ public class FirebaseEnrollmentHelper {
                         return;
                     }
 
-                    // proceed with deletion
                     db.collection("enrollments").document(doc.getId()).delete()
                             .addOnSuccessListener(unused -> {
+                                new EnrollmentDBHelper(context).deleteEnrollment(doc.getId());
+
                                 db.collection("activities").document(activityId).get()
                                         .addOnSuccessListener(snapshot -> {
                                             ActivityModel activity = snapshot.toObject(ActivityModel.class);
@@ -119,7 +127,7 @@ public class FirebaseEnrollmentHelper {
     }
 
 
-    public static void getUserEnrollments(String participantId, OnCompleteListener<java.util.List<EnrollmentModel>> listener) {
+    public static void getUserEnrollments(Context context,String participantId, OnCompleteListener<java.util.List<EnrollmentModel>> listener) {
         db.collection("enrollments")
                 .whereEqualTo("participantId", participantId)
                 .get()
@@ -165,7 +173,12 @@ public class FirebaseEnrollmentHelper {
                                 });
                     }
                 })
-                .addOnFailureListener(e -> listener.onComplete(TaskUtils.failure("Failed to load enrollments")));
+                .addOnFailureListener(e -> {
+                    // Fallback: Use local database
+                    EnrollmentDBHelper localDb = new EnrollmentDBHelper(context);
+                    List<EnrollmentModel> localEnrollments = localDb.getEnrollmentsByParticipantId(participantId);
+                    listener.onComplete(TaskUtils.success(localEnrollments));
+                });
     }
 
 }

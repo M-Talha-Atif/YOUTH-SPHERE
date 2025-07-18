@@ -1,6 +1,9 @@
 package com.event.youthSphere.firebase;
 
 
+import android.content.Context;
+
+import com.event.youthSphere.localdb.UserDBHelper;
 import com.event.youthSphere.models.users.ParentUser;
 import com.event.youthSphere.models.users.ParticipantUser;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,8 +40,11 @@ public class FirebaseParentHelper {
                 .addOnFailureListener(e -> callback.accept(false, e));
     }
 
-    public static void addChildToParent(String childId, BiConsumer<Boolean, Exception> callback) {
+    public static void addChildToParent(Context context, String childId, BiConsumer<Boolean, Exception> callback) {
         String parentId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // 2. Check in local DB if child already linked to another parent
+        UserDBHelper dbHelper = new UserDBHelper(context);
 
         isChildAlreadyAdded(childId, (alreadyAdded, error) -> {
             if (error != null || alreadyAdded) {
@@ -59,7 +65,11 @@ public class FirebaseParentHelper {
                             childIds.add(childId);
                             db.collection("users").document(parentId)
                                     .update("childIds", childIds)
-                                    .addOnSuccessListener(unused -> callback.accept(true, null))
+                                    .addOnSuccessListener(unused -> {
+                                        // Update local SQLite
+                                         dbHelper.addChildToParent(parentId, childId);
+                                        callback.accept(true, null);
+                                    })
                                     .addOnFailureListener(e -> callback.accept(false, e));
                         } else {
                             callback.accept(true, null); // Already added to this parent

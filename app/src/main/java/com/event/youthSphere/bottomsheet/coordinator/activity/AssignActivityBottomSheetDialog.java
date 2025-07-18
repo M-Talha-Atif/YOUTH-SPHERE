@@ -260,6 +260,7 @@ public class AssignActivityBottomSheetDialog extends DialogFragment {
                 selectedInstructor.getUid(),
                 domain,
                 startDate,
+                requireContext(),
                 task -> {
                     if (task.isSuccessful()) {
                         if (getContext() != null && isAdded()) {

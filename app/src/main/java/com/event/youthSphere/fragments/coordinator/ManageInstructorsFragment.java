@@ -91,7 +91,7 @@ public class ManageInstructorsFragment extends Fragment {
                         .setTitle("Delete Instructor")
                         .setMessage("Are you sure you want to delete this instructor?")
                         .setPositiveButton("Delete", (dialog, which) -> {
-                            FirebaseCoordinateHelper.deleteInstructor(instructor.getUid(), task -> {
+                            FirebaseCoordinateHelper.deleteInstructor( requireContext(), instructor.getUid(), task -> {
                                 if (task.isSuccessful()) {
                                     if (getContext() != null) {
                                         Toast.makeText(getContext(), "Instructor deleted", Toast.LENGTH_SHORT).show();
@@ -120,7 +120,7 @@ public class ManageInstructorsFragment extends Fragment {
     }
 
     private void loadInstructors() {
-        FirebaseCoordinateHelper.getAllInstructors((snapshots, error) -> {
+        FirebaseCoordinateHelper.getAllInstructors( requireContext(), (snapshots, error) -> {
             if (error != null || snapshots == null) return;
 
             instructors.clear();

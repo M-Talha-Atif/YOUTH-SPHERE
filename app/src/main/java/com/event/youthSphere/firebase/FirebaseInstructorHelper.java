@@ -1,7 +1,14 @@
 package com.event.youthSphere.firebase;
 
+import android.content.ContentValues;
+import android.content.Context;
+
+import com.event.youthSphere.localdb.ActivityImageDBHelper;
+import com.event.youthSphere.localdb.UserDBHelper;
+import com.event.youthSphere.models.activity.ActivityModel;
 import com.event.youthSphere.models.users.ParticipantUser;
 import com.event.youthSphere.models.users.User;
+import com.event.youthSphere.utils.TaskUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,12 +31,41 @@ public class FirebaseInstructorHelper {
         void onLoaded(List<User> participants, Exception error);
     }
 
-    public static void getInstructorActivities(String instructorId, OnCompleteListener<QuerySnapshot> listener) {
+    public static void getInstructorActivities(Context context, String instructorId, BiConsumer<List<ActivityModel>, Exception> callback) {
         db.collection("activities")
                 .whereEqualTo("instructorId", instructorId)
                 .get()
-                .addOnCompleteListener(listener);
+                .addOnSuccessListener(querySnapshot -> {
+                    List<ActivityModel> list = new ArrayList<>();
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        ActivityModel activity = doc.toObject(ActivityModel.class);
+                        if (activity != null) list.add(activity);
+                    }
+                    callback.accept(list, null);
+                })
+                .addOnFailureListener(e -> {
+                    // 🔁 Fallback: local comma-separated
+                    UserDBHelper userDB = new UserDBHelper(context);
+                    ContentValues instructor = userDB.getUserByUid(instructorId);
+                    List<ActivityModel> fallback = new ArrayList<>();
+
+                    if (instructor != null) {
+                        String activitiesRaw = instructor.getAsString("activities");
+                        if (activitiesRaw != null && !activitiesRaw.isEmpty()) {
+                            String[] ids = activitiesRaw.split(",");
+                            for (String id : ids) {
+                                ActivityModel fake = new ActivityModel();
+                                fake.setId(id.trim());
+                                fake.setName("Offline Activity (" + id.trim() + ")");
+                                fallback.add(fake);
+                            }
+                        }
+                    }
+
+                    callback.accept(fallback, e);
+                });
     }
+
 
     public  static String getCurrentUserID(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -40,8 +76,9 @@ public class FirebaseInstructorHelper {
         return  null;
     }
 
-    public static void uploadActivityImage(String activityId, String base64Image, String domain, String name, OnCompleteListener<DocumentReference> listener) {
+    public static void uploadActivityImage(Context context, String activityId, String base64Image, String domain, String name, OnCompleteListener<DocumentReference> listener) {
         String uploadDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+
         Map<String, Object> imageData = new HashMap<>();
         imageData.put("imageUrl", base64Image);
         imageData.put("uploadDate", uploadDate);
@@ -53,24 +90,53 @@ public class FirebaseInstructorHelper {
                 .document(activityId)
                 .collection("ActivityImages")
                 .add(imageData)
-                .addOnCompleteListener(listener);
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Insert into local DB after successful Firestore upload
+                        ActivityImageModel model = new ActivityImageModel();
+                        model.setImageUrl(base64Image);
+                        model.setUploadDate(uploadDate);
+                        model.setDomain(domain);
+                        model.setName(name);
+
+                        ActivityImageDBHelper dbHelper = new ActivityImageDBHelper(context);
+                        dbHelper.insertImage(activityId, model);
+                    }
+
+                    // Still notify original listener
+                    if (listener != null) {
+                        listener.onComplete(task);
+                    }
+                });
     }
 
-    public static void getActivityImages(String activityId, BiConsumer<List<ActivityImageModel>, Exception> callback) {
+
+    public static void getActivityImages(Context context, String activityId, BiConsumer<List<ActivityImageModel>, Exception> callback) {
         db.collection("activities")
                 .document(activityId)
                 .collection("ActivityImages")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<ActivityImageModel> images = new ArrayList<>();
+                    ActivityImageDBHelper localDB = new ActivityImageDBHelper(context);
+
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         ActivityImageModel image = doc.toObject(ActivityImageModel.class);
                         images.add(image);
+                        // Sync to local DB
+                        localDB.insertImage(activityId, image);
                     }
+
                     callback.accept(images, null);
                 })
-                .addOnFailureListener(e -> callback.accept(null, e));
+                .addOnFailureListener(e -> {
+                    // Offline fallback
+                    ActivityImageDBHelper localDB = new ActivityImageDBHelper(context);
+                    List<ActivityImageModel> offlineImages = localDB.getImagesByActivityId(activityId);
+                    callback.accept(offlineImages, e);
+                });
     }
+
 
     public static void getParticipantsForActivity(String activityId, OnParticipantsLoaded callback) {
         db.collection("enrollments")
